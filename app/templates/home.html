@@ -1,0 +1,363 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Fashion AI – Your Personal Style Assistant{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Hero ── */
+  .hero {
+    padding: 96px 0 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 0%, rgba(201,169,110,0.13) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 80% 80%, rgba(139,111,71,0.07) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    background: rgba(201,169,110,0.12);
+    border: 1px solid rgba(201,169,110,0.3);
+    border-radius: 100px;
+    padding: 6px 16px;
+    margin-bottom: 28px;
+  }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    max-width: 780px;
+    margin: 0 auto 24px;
+  }
+  .hero h1 em { font-style: italic; color: var(--accent); }
+
+  .hero-desc {
+    font-size: 1.05rem;
+    color: var(--muted);
+    max-width: 520px;
+    margin: 0 auto 40px;
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+  .hero-visual {
+    margin-top: 72px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .hero-badge {
+    background: var(--white);
+    border: 1px solid var(--stone);
+    border-radius: var(--radius);
+    padding: 16px 22px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: var(--ink);
+    font-weight: 500;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .hero-badge .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* ── Section Header ── */
+  .section-header { text-align: center; margin-bottom: 56px; }
+  .section-label {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 14px;
+  }
+  .section-header h2 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+  .section-header p {
+    font-size: 1rem;
+    color: var(--muted);
+    max-width: 480px;
+    margin: 0 auto;
+    font-weight: 300;
+  }
+
+  /* ── How It Works ── */
+  .how-it-works {
+    padding: 96px 0;
+    background: var(--sand);
+    border-top: 1px solid var(--stone);
+    border-bottom: 1px solid var(--stone);
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+  }
+
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 36px 28px;
+    border: 1px solid var(--stone);
+    transition: box-shadow 0.22s, transform 0.22s;
+  }
+  .step-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.07); transform: translateY(-3px); }
+
+  .step-number {
+    font-family: var(--font-display);
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: var(--stone);
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+  .step-icon { font-size: 1.6rem; margin-bottom: 16px; display: block; }
+  .step-card h3 { font-size: 1rem; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
+  .step-card p { font-size: 0.875rem; color: var(--muted); line-height: 1.6; font-weight: 300; }
+
+  /* ── Features ── */
+  .features { padding: 96px 0; }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .feature-card {
+    background: var(--white);
+    border: 1px solid var(--stone);
+    border-radius: var(--radius);
+    padding: 40px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.22s, transform 0.22s;
+  }
+  .feature-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    opacity: 0;
+    transition: opacity 0.22s;
+  }
+  .feature-card:hover { box-shadow: 0 10px 40px rgba(0,0,0,0.08); transform: translateY(-4px); }
+  .feature-card:hover::before { opacity: 1; }
+
+  .feature-icon {
+    width: 52px; height: 52px;
+    background: var(--sand);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 22px;
+    transition: background 0.22s;
+  }
+  .feature-card:hover .feature-icon { background: rgba(201,169,110,0.15); }
+  .feature-card h3 { font-size: 1.05rem; font-weight: 500; color: var(--ink); margin-bottom: 10px; }
+  .feature-card p { font-size: 0.875rem; color: var(--muted); line-height: 1.65; font-weight: 300; }
+
+  .badge-soon {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    background: rgba(201,169,110,0.12);
+    border: 1px solid rgba(201,169,110,0.3);
+    border-radius: 100px;
+    padding: 3px 10px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  /* ── CTA ── */
+  .cta-section {
+    padding: 80px 0;
+    background: var(--ink);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(201,169,110,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-section .section-label { color: var(--accent); }
+  .cta-section h2 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--white);
+    margin-bottom: 14px;
+  }
+  .cta-section p {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.55);
+    max-width: 420px;
+    margin: 0 auto 36px;
+    font-weight: 300;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .hero { padding: 64px 0 56px; }
+    .hero-visual { gap: 12px; }
+    .hero-badge { font-size: 0.8rem; padding: 12px 16px; }
+    .steps-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .steps-grid { grid-template-columns: 1fr; }
+    .features-grid { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+  <!-- ── Hero ── -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-eyebrow">✦ Powered by Artificial Intelligence</div>
+      <h1>AI Powered Personal<br><em>Fashion Assistant</em></h1>
+      <p class="hero-desc">Discover the colors, outfits, and styles that truly complement your body type and skin tone — curated by AI, made personal for you.</p>
+      <div class="hero-cta">
+        {% if user.is_authenticated %}
+        <a href="{% url 'register' %}" class="btn btn-primary">Start Your Style Profile</a>
+        {% else %}
+        <a href="{% url 'register' %}" class="btn btn-primary">Start Your Style Profile</a>
+          <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
+        {% endif %}
+      </div>
+      <div class="hero-visual">
+        <div class="hero-badge"><span class="dot"></span> Personalized Color Analysis</div>
+        <div class="hero-badge"><span class="dot"></span> Body-Type Smart Styling</div>
+        <div class="hero-badge"><span class="dot"></span> Skin Tone Matching</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── How It Works ── -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">The Process</span>
+        <h2>How It Works</h2>
+        <p>Four simple steps to unlock your personalized style identity.</p>
+      </div>
+      <div class="steps-grid">
+
+        <div class="step-card">
+          <div class="step-number">01</div>
+          <span class="step-icon">👤</span>
+          <h3>Create Your Account</h3>
+          <p>Sign up in seconds and set up your private style profile with a few quick details.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">02</div>
+          <span class="step-icon">📐</span>
+          <h3>Enter Your Body Profile</h3>
+          <p>Share your measurements and body shape so our AI can understand your unique silhouette.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">03</div>
+          <span class="step-icon">📷</span>
+          <h3>Upload Your Photo</h3>
+          <p>A simple selfie helps the AI analyze your skin tone and features for precise color recommendations.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">04</div>
+          <span class="step-icon">✨</span>
+          <h3>Get AI Recommendations</h3>
+          <p>Receive a full fashion report: colors, outfits, and style directions tailored specifically to you.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Features ── -->
+  <section class="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">What You Get</span>
+        <h2>Feature Preview</h2>
+        <p>Every tool you need to build a wardrobe that works for you.</p>
+      </div>
+      <div class="features-grid">
+
+        <div class="feature-card">
+          <div class="feature-icon">🎨</div>
+          <h3>Color Analysis</h3>
+          <p>Our AI studies your skin tone, undertones, and natural coloring to build a personalized palette of flattering colors — from everyday basics to statement hues.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">👗</div>
+          <h3>Outfit Recommendations</h3>
+          <p>Get curated outfit suggestions matched to your body type, lifestyle, and occasion — every combination designed to make you feel confident and put-together.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🧍</div>
+          <h3>3D Avatar <span class="badge-soon">Coming Soon</span></h3>
+          <p>Try outfits on a personalized 3D avatar that mirrors your exact body proportions — see how clothes look before you ever buy them.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ── -->
+  <section class="cta-section">
+    <div class="container">
+      <span class="section-label">Get Started Today</span>
+      <h2>Ready to discover your<br>personal style?</h2>
+      <p>Join thousands of users who've already transformed the way they dress.</p>
+      <a href="{% url 'register' %}" class="btn btn-accent">Create Your Account</a>
+    </div>
+  </section>
+
+{% endblock %}

@@ -1,0 +1,314 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Account – Fashion AI{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Auth Page Layout ── */
+  .auth-page {
+    min-height: calc(100vh - 68px);
+    background: var(--cream);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .auth-page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 30% 20%, rgba(201,169,110,0.1) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 80% 80%, rgba(139,111,71,0.07) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  /* ── Card ── */
+  .auth-card {
+    background: var(--white);
+    border: 1px solid var(--stone);
+    border-radius: 20px;
+    padding: 52px 48px;
+    width: 100%;
+    max-width: 520px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.06);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Header ── */
+  .auth-header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .auth-logo {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--ink);
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 24px;
+  }
+  .auth-logo span { color: var(--accent); }
+
+  .auth-eyebrow {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    background: rgba(201,169,110,0.1);
+    border: 1px solid rgba(201,169,110,0.25);
+    border-radius: 100px;
+    padding: 5px 14px;
+    margin-bottom: 14px;
+  }
+
+  .auth-header h1 {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .auth-header p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  /* ── Form Fields ── */
+  .auth-form .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .auth-form p {
+    margin-bottom: 18px;
+  }
+
+  .auth-form label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+    margin-bottom: 7px;
+  }
+
+  .auth-form input[type="text"],
+  .auth-form input[type="email"],
+  .auth-form input[type="password"],
+  .auth-form input[type="tel"] {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--cream);
+    border: 1.5px solid var(--stone);
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .auth-form input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(201,169,110,0.12);
+    background: var(--white);
+  }
+
+  .auth-form input::placeholder {
+    color: #b8b0a8;
+  }
+
+  /* Error messages from Django */
+  .auth-form ul.errorlist {
+    list-style: none;
+    margin: 6px 0 0;
+    padding: 0;
+  }
+  .auth-form ul.errorlist li {
+    font-size: 0.78rem;
+    color: #c0392b;
+    font-weight: 400;
+  }
+
+  /* Non-field errors */
+  .form-errors {
+    background: rgba(192, 57, 43, 0.06);
+    border: 1px solid rgba(192, 57, 43, 0.2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 22px;
+  }
+  .form-errors ul { list-style: none; padding: 0; margin: 0; }
+  .form-errors li {
+    font-size: 0.85rem;
+    color: #c0392b;
+    font-weight: 400;
+  }
+
+  /* ── Submit Button ── */
+  .auth-submit {
+    width: 100%;
+    padding: 14px;
+    background: var(--ink);
+    color: var(--white);
+    border: none;
+    border-radius: 100px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition: background 0.22s, transform 0.18s;
+    margin-top: 8px;
+  }
+  .auth-submit:hover {
+    background: var(--accent2);
+    transform: translateY(-1px);
+  }
+
+  /* ── Divider ── */
+  .auth-divider {
+    text-align: center;
+    margin: 24px 0;
+    position: relative;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .auth-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 0; right: 0;
+    height: 1px;
+    background: var(--stone);
+  }
+  .auth-divider span {
+    background: var(--white);
+    padding: 0 12px;
+    position: relative;
+  }
+
+  /* ── Login Link ── */
+  .auth-footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+  .auth-footer a {
+    color: var(--accent2);
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.18s;
+  }
+  .auth-footer a:hover { color: var(--ink); }
+
+  /* ── Responsive ── */
+  @media (max-width: 560px) {
+    .auth-card { padding: 36px 24px; }
+    .auth-form .form-row { grid-template-columns: 1fr; }
+    .auth-header h1 { font-size: 1.8rem; }
+  }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<section class="auth-page">
+  <div class="auth-card">
+
+    <div class="auth-header">
+      <a href="{% url 'home' %}" class="auth-logo">Fashion <span>AI</span></a>
+      <div class="auth-eyebrow">✦ Get Started Free</div>
+      <h1>Create Account</h1>
+      <p>Set up your profile and discover your personal style.</p>
+    </div>
+
+    {% if form.non_field_errors %}
+      <div class="form-errors">
+        <ul>
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <form method="POST" class="auth-form" novalidate>
+      {% csrf_token %}
+
+      {# ── First Name & Last Name side by side ── #}
+      <div class="form-row">
+        <p>
+          {{ form.first_name.label_tag }}
+          {{ form.first_name }}
+          {{ form.first_name.errors }}
+        </p>
+        <p>
+          {{ form.last_name.label_tag }}
+          {{ form.last_name }}
+          {{ form.last_name.errors }}
+        </p>
+      </div>
+
+      {# ── Username ── #}
+      <p>
+        {{ form.username.label_tag }}
+        {{ form.username }}
+        {{ form.username.errors }}
+      </p>
+
+      {# ── Email ── #}
+      <p>
+        {{ form.email.label_tag }}
+        {{ form.email }}
+        {{ form.email.errors }}
+      </p>
+
+      {# ── Phone Number ── #}
+      <p>
+        {{ form.phone_number.label_tag }}
+        {{ form.phone_number }}
+        {{ form.phone_number.errors }}
+      </p>
+
+      {# ── Password ── #}
+      <p>
+        {{ form.password.label_tag }}
+        {{ form.password }}
+        {{ form.password.errors }}
+      </p>
+
+      {# ── Confirm Password ── #}
+      <p>
+        {{ form.password_confirm.label_tag }}
+        {{ form.password_confirm }}
+        {{ form.password_confirm.errors }}
+      </p>
+
+      <button type="submit" class="auth-submit">Create My Account →</button>
+    </form>
+
+    <div class="auth-divider"><span>already have an account?</span></div>
+
+    <div class="auth-footer">
+      <a href="{% url 'login' %}">Sign in instead</a>
+    </div>
+
+  </div>
+</section>
+{% endblock %}
