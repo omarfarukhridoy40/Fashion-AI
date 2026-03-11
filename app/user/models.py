@@ -1,21 +1,9 @@
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    BaseUserManager,
-    PermissionsMixin,
-)
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 
 
 class MyUserManager(BaseUserManager):
-    def create_user(
-        self,
-        first_name,
-        last_name,
-        email,
-        username,
-        phone_number,
-        password=None,
-    ):
+    def create_user(self, first_name, last_name, email, username, phone_number, password=None):
         if not email:
             raise ValueError("Users must have an email address")
 
@@ -34,15 +22,7 @@ class MyUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(
-        self,
-        first_name,
-        last_name,
-        email,
-        username,
-        phone_number,
-        password,
-    ):
+    def create_superuser(self, first_name, last_name, email, username, phone_number, password):
         user = self.create_user(
             email=self.normalize_email(email),
             username=username,
@@ -65,11 +45,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=50)
     username = models.CharField(max_length=50, unique=True)
     email = models.EmailField(max_length=100, unique=True)
-    phone_number = models.CharField(
-        "Phone Number",
-        max_length=15,
-        unique=True,
-    )
+    phone_number = models.CharField("Phone Number", max_length=15, unique=True)
 
     # Required
     date_joined = models.DateTimeField(auto_now_add=True)
