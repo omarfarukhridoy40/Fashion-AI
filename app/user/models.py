@@ -1,11 +1,21 @@
-# Create your models here.
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 from django.db import models
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 
-# Create your models here.
+
 class MyUserManager(BaseUserManager):
-    def create_user(self, first_name, last_name, email, username, phone_number, password=None):
-
+    def create_user(
+        self,
+        first_name,
+        last_name,
+        email,
+        username,
+        phone_number,
+        password=None,
+    ):
         if not email:
             raise ValueError("Users must have an email address")
 
@@ -14,25 +24,32 @@ class MyUserManager(BaseUserManager):
 
         user = self.model(
             email=self.normalize_email(email),
-            username = username,
-            first_name = first_name,
-            last_name = last_name,
-            phone_number = phone_number,
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            phone_number=phone_number,
         )
 
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, first_name, last_name, email, username, phone_number, password):
-
+    def create_superuser(
+        self,
+        first_name,
+        last_name,
+        email,
+        username,
+        phone_number,
+        password,
+    ):
         user = self.create_user(
             email=self.normalize_email(email),
-            username = username,
-            password = password,
-            first_name = first_name,
-            last_name = last_name,
-            phone_number = phone_number,
+            username=username,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            phone_number=phone_number,
         )
         user.is_admin = True
         user.is_active = True
@@ -43,13 +60,16 @@ class MyUserManager(BaseUserManager):
         return user
 
 
-
 class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     username = models.CharField(max_length=50, unique=True)
     email = models.EmailField(max_length=100, unique=True)
-    phone_number = models.CharField("Phone Number", max_length=15, unique=True)
+    phone_number = models.CharField(
+        "Phone Number",
+        max_length=15,
+        unique=True,
+    )
 
     # Required
     date_joined = models.DateTimeField(auto_now_add=True)
@@ -58,13 +78,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_superadmin = models.BooleanField(default=False)
 
-    USERNAME_FIELD= 'email'
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "first_name", "last_name", "phone_number"]
 
     objects = MyUserManager()
 
     def __str__(self):
         return self.email
-
-
-
