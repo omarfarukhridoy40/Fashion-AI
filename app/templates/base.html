@@ -238,7 +238,7 @@
         <li><a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
         <li><a href="{% url 'home' %}#how-it-works">How It Works</a></li>
         {% if user.is_authenticated %}
-          <li><a href="#" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Dashboard</a></li> 
+          <li><a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Dashboard</a></li>
         {% endif %}
       </ul>
 

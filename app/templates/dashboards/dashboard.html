@@ -1,0 +1,582 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard – Fashion AI{% endblock %}
+
+{% block extra_css %}
+<style>
+
+  /* ── Dashboard Page ── */
+  .dashboard-page {
+    min-height: calc(100vh - 68px);
+    background: var(--cream);
+    padding: 52px 0 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dashboard-page::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 50% 40% at 80% 10%, rgba(201,169,110,0.09) 0%, transparent 60%),
+      radial-gradient(ellipse 35% 35% at 10% 80%, rgba(139,111,71,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  /* ── Welcome Header ── */
+  .dashboard-header {
+    margin-bottom: 48px;
+  }
+
+  .dashboard-eyebrow {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    background: rgba(201,169,110,0.1);
+    border: 1px solid rgba(201,169,110,0.25);
+    border-radius: 100px;
+    padding: 5px 14px;
+    margin-bottom: 14px;
+  }
+
+  .dashboard-header h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .dashboard-header h1 span {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .dashboard-header p {
+    font-size: 0.95rem;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  /* ── Quick Actions ── */
+  .quick-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 52px;
+  }
+
+  .quick-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--white);
+    border: 1.5px solid var(--stone);
+    border-radius: 100px;
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .quick-action:hover {
+    border-color: var(--accent);
+    background: rgba(201,169,110,0.06);
+    transform: translateY(-1px);
+  }
+  .quick-action .qa-icon { font-size: 1rem; }
+
+  .quick-action.completed {
+    border-color: #a8d5b5;
+    background: #f0faf4;
+    color: #1e6b3a;
+  }
+
+  /* ── Section Title ── */
+  .section-title {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  /* ── Dashboard Grid ── */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 20px;
+  }
+
+  /* ── Base Card ── */
+  .dash-card {
+    background: var(--white);
+    border: 1px solid var(--stone);
+    border-radius: 18px;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.25s, transform 0.25s;
+  }
+  .dash-card:hover {
+    box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+    transform: translateY(-3px);
+  }
+
+  .dash-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .dash-card:hover::after { opacity: 1; }
+
+  /* ── Card Sizes ── */
+  .card-body-profile  { grid-column: span 5; }
+  .card-outfit        { grid-column: span 7; }
+  .card-wardrobe      { grid-column: span 7; }
+  .card-chatbot       { grid-column: span 5; }
+
+  /* ── Card Icon ── */
+  .card-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: var(--sand);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    transition: background 0.22s;
+  }
+  .dash-card:hover .card-icon { background: rgba(201,169,110,0.15); }
+
+  /* ── Card Content ── */
+  .card-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+
+  .card-desc {
+    font-size: 0.855rem;
+    color: var(--muted);
+    line-height: 1.65;
+    font-weight: 300;
+    margin-bottom: 24px;
+  }
+
+  /* ── Status Badge ── */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 100px;
+  }
+  .status-badge.pending {
+    background: rgba(201,169,110,0.1);
+    color: var(--accent2);
+    border: 1px solid rgba(201,169,110,0.25);
+  }
+  .status-badge.done {
+    background: #f0faf4;
+    color: #1e6b3a;
+    border: 1px solid #a8d5b5;
+  }
+  .status-badge .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  /* ── Progress Bar ── */
+  .progress-wrap {
+    margin: 20px 0 24px;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .progress-bar {
+    height: 6px;
+    background: var(--sand);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 100px;
+    width: 0%;
+    transition: width 1s ease;
+  }
+
+  /* ── Card Action Button ── */
+  .card-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border-radius: 100px;
+    font-family: var(--font-body);
+    font-size: 0.83rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+  }
+  .card-btn-primary {
+    background: var(--ink);
+    color: var(--white);
+  }
+  .card-btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+
+  .card-btn-outline {
+    background: transparent;
+    color: var(--ink);
+    border: 1.5px solid var(--stone);
+  }
+  .card-btn-outline:hover { border-color: var(--ink); background: var(--ink); color: var(--white); }
+
+  /* ── Body Profile Card specific ── */
+  .profile-steps {
+    list-style: none;
+    margin: 16px 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .profile-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.855rem;
+    color: var(--muted);
+    font-weight: 300;
+  }
+  .profile-step .step-check {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--stone);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem;
+    flex-shrink: 0;
+    color: var(--stone);
+  }
+  .profile-step.done-step .step-check {
+    background: #f0faf4;
+    border-color: #a8d5b5;
+    color: #1e6b3a;
+  }
+  .profile-step.done-step { color: var(--ink); }
+
+  /* ── Outfit Card specific ── */
+  .outfit-preview {
+    display: flex;
+    gap: 10px;
+    margin: 16px 0 24px;
+    flex-wrap: wrap;
+  }
+  .outfit-placeholder {
+    flex: 1;
+    min-width: 80px;
+    height: 100px;
+    background: var(--sand);
+    border-radius: 10px;
+    border: 1.5px dashed var(--stone);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: var(--stone);
+    transition: background 0.2s;
+  }
+  .outfit-placeholder:hover { background: rgba(201,169,110,0.1); }
+
+  /* ── Wardrobe Card specific ── */
+  .wardrobe-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 16px 0 24px;
+  }
+  .wardrobe-stat {
+    background: var(--sand);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+  .wardrobe-stat-num {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .wardrobe-stat-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  /* ── Chatbot Card specific ── */
+  .chat-preview {
+    margin: 16px 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .chat-bubble {
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 0.83rem;
+    line-height: 1.5;
+    max-width: 90%;
+    font-weight: 300;
+  }
+  .chat-bubble.ai {
+    background: var(--sand);
+    color: var(--ink);
+    border-bottom-left-radius: 4px;
+    align-self: flex-start;
+  }
+  .chat-bubble.user {
+    background: var(--ink);
+    color: var(--white);
+    border-bottom-right-radius: 4px;
+    align-self: flex-end;
+  }
+  .chat-bubble .bubble-label {
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-bottom: 4px;
+  }
+
+  /* ── Coming Soon overlay ── */
+  .coming-soon-wrap { position: relative; }
+  .coming-soon-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(250,248,245,0.7);
+    backdrop-filter: blur(2px);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+  .coming-soon-tag {
+    background: var(--ink);
+    color: var(--white);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 8px 18px;
+    border-radius: 100px;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 1024px) {
+    .card-body-profile  { grid-column: span 6; }
+    .card-outfit        { grid-column: span 6; }
+    .card-wardrobe      { grid-column: span 6; }
+    .card-chatbot       { grid-column: span 6; }
+  }
+
+  @media (max-width: 768px) {
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .card-body-profile,
+    .card-outfit,
+    .card-wardrobe,
+    .card-chatbot { grid-column: span 1; }
+    .wardrobe-stats { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (max-width: 480px) {
+    .quick-actions { gap: 8px; }
+    .wardrobe-stats { grid-template-columns: 1fr 1fr; }
+  }
+
+</style>
+{% endblock %}
+
+
+{% block content %}
+<section class="dashboard-page">
+  <div class="container">
+
+    <!-- ── Welcome Header ── -->
+    <div class="dashboard-header">
+      <div class="dashboard-eyebrow">✦ Your Style Hub</div>
+      <h1>Welcome back, <span>{{ user.first_name }}</span></h1>
+      <p>Here's everything you need to build your perfect wardrobe.</p>
+    </div>
+
+    <!-- ── Quick Actions ── -->
+    <div class="quick-actions">
+      <a class="quick-action completed">
+        <span class="qa-icon">✔</span> Body Profile Completed
+      </a>
+      <a class="quick-action">
+        <span class="qa-icon">👕</span> Upload Outfit
+      </a>
+      <a class="quick-action">
+        <span class="qa-icon">🤖</span> Get AI Recommendation
+      </a>
+      <a class="quick-action">
+        <span class="qa-icon">📦</span> My Wardrobe
+      </a>
+    </div>
+
+    <!-- ── Cards ── -->
+    <p class="section-title">Your Dashboard</p>
+    <div class="dashboard-grid">
+
+      <!-- ── Body Profile Card ── -->
+      <div class="dash-card card-body-profile">
+        <div class="card-icon">📐</div>
+        <div class="card-label">Step 1</div>
+        <div class="card-title">Body Profile</div>
+        <p class="card-desc">Set up your measurements and body shape so the AI can make accurate style recommendations.</p>
+
+        <ul class="profile-steps">
+          <li class="profile-step done-step">
+            <span class="step-check">✓</span> Basic measurements
+          </li>
+          <li class="profile-step done-step">
+            <span class="step-check">✓</span> Body shape selected
+          </li>
+          <li class="profile-step">
+            <span class="step-check">○</span> Photo uploaded
+          </li>
+          <li class="profile-step">
+            <span class="step-check">○</span> Skin tone analyzed
+          </li>
+        </ul>
+
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>Profile completion</span>
+            <span>50%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 50%"></div>
+          </div>
+        </div>
+
+        <span class="status-badge pending">
+          <span class="status-dot"></span> In Progress
+        </span>
+      </div>
+
+      <!-- ── Outfit Recommendations Card ── -->
+      <div class="dash-card card-outfit">
+        <div class="card-icon">✨</div>
+        <div class="card-label">AI Powered</div>
+        <div class="card-title">Outfit Recommendations</div>
+        <p class="card-desc">Get personalized outfit suggestions based on your body profile, skin tone, and style preferences.</p>
+
+        <div class="outfit-preview">
+          <div class="outfit-placeholder">👕</div>
+          <div class="outfit-placeholder">👗</div>
+          <div class="outfit-placeholder">🧥</div>
+          <div class="outfit-placeholder">+</div>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="card-btn card-btn-primary">🤖 Get Recommendations</a>
+          <a class="card-btn card-btn-outline">View All</a>
+        </div>
+      </div>
+
+      <!-- ── Wardrobe Card ── -->
+      <div class="dash-card card-wardrobe">
+        <div class="card-icon">📦</div>
+        <div class="card-label">My Collection</div>
+        <div class="card-title">Wardrobe</div>
+        <p class="card-desc">Manage your clothing collection. Upload items and let AI suggest the best outfit combinations.</p>
+
+        <div class="wardrobe-stats">
+          <div class="wardrobe-stat">
+            <div class="wardrobe-stat-num">0</div>
+            <div class="wardrobe-stat-label">Tops</div>
+          </div>
+          <div class="wardrobe-stat">
+            <div class="wardrobe-stat-num">0</div>
+            <div class="wardrobe-stat-label">Bottoms</div>
+          </div>
+          <div class="wardrobe-stat">
+            <div class="wardrobe-stat-num">0</div>
+            <div class="wardrobe-stat-label">Outfits</div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="card-btn card-btn-primary">👕 Upload Item</a>
+          <a class="card-btn card-btn-outline">Browse Wardrobe</a>
+        </div>
+      </div>
+
+      <!-- ── Chatbot Card ── -->
+      <div class="dash-card card-chatbot">
+        <div class="card-icon">🤖</div>
+        <div class="card-label">AI Assistant</div>
+        <div class="card-title">Style Chatbot</div>
+        <p class="card-desc">Ask anything about fashion, color matching, or get personalized style advice instantly.</p>
+
+        <div class="chat-preview">
+          <div class="chat-bubble ai">
+            <div class="bubble-label">Fashion AI</div>
+            Hey {{ user.first_name }}! What style are you going for today?
+          </div>
+          <div class="chat-bubble user">
+            <div class="bubble-label">You</div>
+            Something casual but elegant 🙂
+          </div>
+          <div class="chat-bubble ai">
+            <div class="bubble-label">Fashion AI</div>
+            Great choice! Based on your profile I have some ideas...
+          </div>
+        </div>
+
+        <a class="card-btn card-btn-primary">💬 Start Chatting</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}

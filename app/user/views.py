@@ -22,9 +22,8 @@ def register(request):
 
 
 def login_view(request):
-    # Implement login logic here
     if request.user.is_authenticated:
-        return redirect("home")
+        return redirect("dashboard")
 
     if request.method == "POST":
         form = UserLoginForm(request.POST)
@@ -32,7 +31,7 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             messages.success(request, "You have successfully logged in.")
-            return redirect("home")
+            return redirect("dashboard")
         else:
             messages.error(request, "Invalid username or password.")
     else:
@@ -44,3 +43,7 @@ def logout_view(request):
     # Implement logout logic here
     logout(request)
     return redirect("home")
+
+
+def dashboard(request):
+    return render(request, "dashboards/dashboard.html")

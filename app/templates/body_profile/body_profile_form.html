@@ -1,0 +1,566 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Body Profile – Fashion AI{% endblock %}
+
+{% block extra_css %}
+<style>
+
+  .profile-page {
+    min-height: calc(100vh - 68px);
+    background: var(--cream);
+    padding: 56px 0 96px;
+    position: relative;
+  }
+
+  .profile-page::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 50% 40% at 90% 5%, rgba(201,169,110,0.09) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 30% at 5% 90%, rgba(139,111,71,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  /* ── Header ── */
+  .profile-header { margin-bottom: 40px; }
+
+  .profile-eyebrow {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    background: rgba(201,169,110,0.1);
+    border: 1px solid rgba(201,169,110,0.25);
+    border-radius: 100px;
+    padding: 5px 14px;
+    margin-bottom: 14px;
+  }
+
+  .profile-header h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .profile-header p {
+    font-size: 0.95rem;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 500px;
+  }
+
+  /* ── Layout ── */
+  .profile-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* ── Form Card ── */
+  .form-card {
+    background: var(--white);
+    border: 1px solid var(--stone);
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
+  .form-section {
+    padding: 30px 34px;
+    border-bottom: 1px solid var(--sand);
+  }
+
+  .form-section-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .section-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: var(--sand);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+  }
+
+  .section-sub {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 300;
+    margin-top: 2px;
+  }
+
+  /* ── Field Grids ── */
+  .fg { display: grid; gap: 16px; }
+  .fg-1 { grid-template-columns: 1fr; }
+  .fg-2 { grid-template-columns: 1fr 1fr; }
+  .fg-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .fg-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  /* ── Field ── */
+  .f { display: flex; flex-direction: column; gap: 6px; }
+
+  .f label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+  }
+
+  .f input[type="text"],
+  .f input[type="number"],
+  .f select {
+    width: 100%;
+    padding: 11px 14px;
+    background: var(--cream);
+    border: 1.5px solid var(--stone);
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .f select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6560' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-color: var(--cream);
+    padding-right: 36px;
+    cursor: pointer;
+  }
+
+  .f input:focus,
+  .f select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(201,169,110,0.12);
+    background: var(--white);
+  }
+
+  .f-hint { font-size: 0.74rem; color: var(--muted); font-weight: 300; }
+
+  /* ── File Upload ── */
+  .upload-box {
+    border: 2px dashed var(--stone);
+    border-radius: 12px;
+    padding: 26px 16px;
+    text-align: center;
+    cursor: pointer;
+    background: var(--cream);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+  .upload-box:hover { border-color: var(--accent); background: rgba(201,169,110,0.04); }
+
+  .upload-box input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .upload-ico { font-size: 1.6rem; margin-bottom: 6px; }
+  .upload-label { font-size: 0.83rem; color: var(--ink); font-weight: 500; margin-bottom: 3px; }
+  .upload-sub { font-size: 0.74rem; color: var(--muted); font-weight: 300; }
+
+  /* ── Errors ── */
+  .f ul.errorlist { list-style: none; padding: 0; margin: 0; }
+  .f ul.errorlist li { font-size: 0.75rem; color: #c0392b; }
+
+  /* ── Non-field errors ── */
+  .form-errors {
+    background: rgba(192,57,43,0.06);
+    border: 1px solid rgba(192,57,43,0.2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 0 34px 20px;
+  }
+  .form-errors ul { list-style: none; padding: 0; margin: 0; }
+  .form-errors li { font-size: 0.85rem; color: #c0392b; }
+
+  /* ── Actions ── */
+  .form-actions {
+    padding: 26px 34px;
+    background: var(--sand);
+    border-top: 1px solid var(--stone);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .form-actions-note { font-size: 0.82rem; color: var(--muted); font-weight: 300; }
+  .form-actions-btns { display: flex; gap: 10px; }
+
+  .btn-submit {
+    padding: 12px 28px;
+    background: var(--ink);
+    color: var(--white);
+    border: none;
+    border-radius: 100px;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.18s;
+  }
+  .btn-submit:hover { background: var(--accent2); transform: translateY(-1px); }
+
+  .btn-back {
+    padding: 12px 22px;
+    background: transparent;
+    color: var(--muted);
+    border: 1.5px solid var(--stone);
+    border-radius: 100px;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .btn-back:hover { border-color: var(--ink); color: var(--ink); }
+
+  /* ── Sidebar ── */
+  .profile-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 84px;
+  }
+
+  .side-card {
+    background: var(--white);
+    border: 1px solid var(--stone);
+    border-radius: 16px;
+    padding: 22px;
+  }
+
+  .side-title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+
+  .side-tip {
+    display: flex;
+    gap: 9px;
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.55;
+    margin-bottom: 10px;
+  }
+  .side-tip:last-child { margin-bottom: 0; }
+  .side-tip-ico { flex-shrink: 0; }
+
+  .side-list { display: flex; flex-direction: column; gap: 8px; }
+  .side-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 300;
+  }
+  .side-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--stone);
+    flex-shrink: 0;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 1024px) {
+    .profile-layout { grid-template-columns: 1fr; }
+    .profile-sidebar { position: static; }
+  }
+  @media (max-width: 640px) {
+    .fg-3, .fg-4 { grid-template-columns: 1fr 1fr; }
+    .form-section { padding: 22px 18px; }
+    .form-actions { padding: 18px; }
+    .form-errors { margin: 0 18px 16px; }
+  }
+  @media (max-width: 420px) {
+    .fg-2, .fg-3, .fg-4 { grid-template-columns: 1fr; }
+  }
+
+</style>
+{% endblock %}
+
+
+{% block content %}
+<section class="profile-page">
+  <div class="container">
+
+    <!-- Header -->
+    <div class="profile-header">
+      <div class="profile-eyebrow">✦ Your Style Setup</div>
+      <h1>Body Profile</h1>
+      <p>The more detail you provide, the more accurate your AI fashion recommendations will be.</p>
+    </div>
+
+    <div class="profile-layout">
+
+      <!-- Form -->
+      <form method="POST" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="form-errors">
+            <ul>{% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul>
+          </div>
+        {% endif %}
+
+        <div class="form-card">
+
+          <!-- Skin & Style -->
+          <div class="form-section">
+            <div class="form-section-head">
+              <div class="section-icon">🎨</div>
+              <div>
+                <div class="section-title">Skin &amp; Style</div>
+                <div class="section-sub">Helps us find your perfect color palette</div>
+              </div>
+            </div>
+            <div class="fg fg-3">
+              <div class="f">
+                {{ form.skin_type.label_tag }}
+                {{ form.skin_type }}
+                {{ form.skin_type.errors }}
+              </div>
+              <div class="f">
+                {{ form.vein_color.label_tag }}
+                {{ form.vein_color }}
+                {{ form.vein_color.errors }}
+                <span class="f-hint">Check the inside of your wrist</span>
+              </div>
+              <div class="f">
+                {{ form.favourite_season.label_tag }}
+                {{ form.favourite_season }}
+                {{ form.favourite_season.errors }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Basic Measurements -->
+          <div class="form-section">
+            <div class="form-section-head">
+              <div class="section-icon">📏</div>
+              <div>
+                <div class="section-title">Basic Measurements</div>
+                <div class="section-sub">In centimetres and kilograms</div>
+              </div>
+            </div>
+            <div class="fg fg-2">
+              <div class="f">
+                {{ form.height_cm.label_tag }}
+                {{ form.height_cm }}
+                {{ form.height_cm.errors }}
+                <span class="f-hint">e.g. 175.5 cm</span>
+              </div>
+              <div class="f">
+                {{ form.weight_kg.label_tag }}
+                {{ form.weight_kg }}
+                {{ form.weight_kg.errors }}
+                <span class="f-hint">e.g. 70.0 kg</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Body Measurements -->
+          <div class="form-section">
+            <div class="form-section-head">
+              <div class="section-icon">📐</div>
+              <div>
+                <div class="section-title">Body Measurements</div>
+                <div class="section-sub">Measure around the fullest part of each area</div>
+              </div>
+            </div>
+            <div class="fg fg-4">
+              <div class="f">
+                {{ form.chest_cm.label_tag }}
+                {{ form.chest_cm }}
+                {{ form.chest_cm.errors }}
+              </div>
+              <div class="f">
+                {{ form.waist_cm.label_tag }}
+                {{ form.waist_cm }}
+                {{ form.waist_cm.errors }}
+              </div>
+              <div class="f">
+                {{ form.hips_cm.label_tag }}
+                {{ form.hips_cm }}
+                {{ form.hips_cm.errors }}
+              </div>
+              <div class="f">
+                {{ form.shoulder_cm.label_tag }}
+                {{ form.shoulder_cm }}
+                {{ form.shoulder_cm.errors }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Shape Profile -->
+          <div class="form-section">
+            <div class="form-section-head">
+              <div class="section-icon">🧍</div>
+              <div>
+                <div class="section-title">Shape Profile</div>
+                <div class="section-sub">For suggesting the most flattering silhouettes</div>
+              </div>
+            </div>
+            <div class="fg fg-2">
+              <div class="f">
+                {{ form.body_shape.label_tag }}
+                {{ form.body_shape }}
+                {{ form.body_shape.errors }}
+              </div>
+              <div class="f">
+                {{ form.face_shape.label_tag }}
+                {{ form.face_shape }}
+                {{ form.face_shape.errors }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Clothing Sizes -->
+          <div class="form-section">
+            <div class="form-section-head">
+              <div class="section-icon">👕</div>
+              <div>
+                <div class="section-title">Clothing Sizes</div>
+                <div class="section-sub">Helps recommend ready-to-wear outfits</div>
+              </div>
+            </div>
+            <div class="fg fg-3">
+              <div class="f">
+                {{ form.shirt_size.label_tag }}
+                {{ form.shirt_size }}
+                {{ form.shirt_size.errors }}
+                <span class="f-hint">e.g. S, M, L, XL</span>
+              </div>
+              <div class="f">
+                {{ form.pants_size.label_tag }}
+                {{ form.pants_size }}
+                {{ form.pants_size.errors }}
+                <span class="f-hint">e.g. 32x30</span>
+              </div>
+              <div class="f">
+                {{ form.shoe_size.label_tag }}
+                {{ form.shoe_size }}
+                {{ form.shoe_size.errors }}
+                <span class="f-hint">e.g. 42</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Photos -->
+          <div class="form-section">
+            <div class="form-section-head">
+              <div class="section-icon">📷</div>
+              <div>
+                <div class="section-title">AI Photos</div>
+                <div class="section-sub">Used only for AI analysis — kept private</div>
+              </div>
+            </div>
+            <div class="fg fg-2">
+              <div class="f">
+                {{ form.body_photo.label_tag }}
+                <div class="upload-box">
+                  {{ form.body_photo }}
+                  <div class="upload-ico">🧍</div>
+                  <div class="upload-label">Upload body photo</div>
+                  <div class="upload-sub">Full body, neutral background preferred</div>
+                </div>
+                {{ form.body_photo.errors }}
+              </div>
+              <div class="f">
+                {{ form.face_photo.label_tag }}
+                <div class="upload-box">
+                  {{ form.face_photo }}
+                  <div class="upload-ico">🤳</div>
+                  <div class="upload-label">Upload face photo</div>
+                  <div class="upload-sub">Clear lighting, no filters</div>
+                </div>
+                {{ form.face_photo.errors }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="form-actions">
+            <span class="form-actions-note">All fields improve your AI recommendations</span>
+            <div class="form-actions-btns">
+              <a href="{% url 'dashboard' %}" class="btn-back">← Back</a>
+              <button type="submit" class="btn-submit">Save Profile →</button>
+            </div>
+          </div>
+
+        </div>
+      </form>
+
+      <!-- Sidebar -->
+      <aside class="profile-sidebar">
+
+        <div class="side-card">
+          <div class="side-title">💡 Tips</div>
+          <div class="side-tip"><span class="side-tip-ico">📏</span> Measure yourself in the morning for most accurate results.</div>
+          <div class="side-tip"><span class="side-tip-ico">💡</span> Check vein color under natural light, not artificial.</div>
+          <div class="side-tip"><span class="side-tip-ico">📷</span> Photos are never shared with third parties.</div>
+          <div class="side-tip"><span class="side-tip-ico">✨</span> You can update your profile any time.</div>
+        </div>
+
+        <div class="side-card">
+          <div class="side-title">🤖 What AI does with this</div>
+          <div class="side-tip"><span class="side-tip-ico">🎨</span> Detects your <strong>color undertone</strong> from skin type and vein color.</div>
+          <div class="side-tip"><span class="side-tip-ico">👗</span> Suggests <strong>flattering silhouettes</strong> based on body shape.</div>
+          <div class="side-tip"><span class="side-tip-ico">🌈</span> Builds a personal <strong>color palette</strong> that suits you.</div>
+        </div>
+
+        <div class="side-card">
+          <div class="side-title">📋 Fields in this form</div>
+          <div class="side-list">
+            <div class="side-item"><span class="side-dot"></span>Skin type &amp; vein color</div>
+            <div class="side-item"><span class="side-dot"></span>Favourite season</div>
+            <div class="side-item"><span class="side-dot"></span>Height &amp; weight</div>
+            <div class="side-item"><span class="side-dot"></span>Chest, waist, hips, shoulder</div>
+            <div class="side-item"><span class="side-dot"></span>Body &amp; face shape</div>
+            <div class="side-item"><span class="side-dot"></span>Shirt, pants &amp; shoe size</div>
+            <div class="side-item"><span class="side-dot"></span>Body &amp; face photo</div>
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+  </div>
+</section>
+{% endblock %}
