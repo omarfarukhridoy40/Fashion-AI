@@ -262,7 +262,7 @@
       <p class="hero-desc">Discover the colors, outfits, and styles that truly complement your body type and skin tone — curated by AI, made personal for you.</p>
       <div class="hero-cta">
         {% if user.is_authenticated %}
-        <a href="{% url 'body_profile' %}" class="btn btn-primary">Start Your Style Profile</a>
+        <a href="{% url 'create_body_profile' %}" class="btn btn-primary">Start Your Style Profile</a>
         {% else %}
         <a href="{% url 'register' %}" class="btn btn-primary">Start Your Style Profile</a>
           <a href="{% url 'login' %}" class="btn btn-outline">Login</a>

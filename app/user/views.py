@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
 from .forms import UserLoginForm, UserRegistrationForm
@@ -10,7 +11,9 @@ def register(request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, "Account created successfully! Please log in.")
+            messages.success(
+                request, "Account created successfully! Please log in."
+            )
             return redirect("login")
         else:
             for field, errors in form.errors.items():
@@ -45,5 +48,41 @@ def logout_view(request):
     return redirect("home")
 
 
+@login_required
 def dashboard(request):
-    return render(request, "dashboards/dashboard.html")
+    from body_profile.models import BodyProfile
+
+    try:
+        body_profile = request.user.body_profile
+    except BodyProfile.DoesNotExist:
+        body_profile = None
+
+    profile_steps = {
+        "basic": bool(
+            body_profile and body_profile.height_cm and body_profile.weight_kg
+        ),
+        "shape": bool(body_profile and body_profile.body_shape),
+        "photo": bool(
+            body_profile
+            and (body_profile.body_photo or body_profile.face_photo)
+        ),
+        "skin": bool(
+            body_profile and body_profile.skin_type and body_profile.vein_color
+        ),
+    }
+    steps_total = len(profile_steps)
+    steps_done = sum(1 for done in profile_steps.values() if done)
+    profile_progress_percent = (
+        int((steps_done / steps_total) * 100) if steps_total else 0
+    )
+
+    return render(
+        request,
+        "dashboards/dashboard.html",
+        {
+            "has_body_profile": body_profile is not None,
+            "body_profile": body_profile,
+            "profile_steps": profile_steps,
+            "profile_progress_percent": profile_progress_percent,
+        },
+    )

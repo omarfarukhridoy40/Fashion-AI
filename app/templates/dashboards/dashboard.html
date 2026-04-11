@@ -448,9 +448,15 @@
 
     <!-- ── Quick Actions ── -->
     <div class="quick-actions">
-      <a class="quick-action completed">
-        <span class="qa-icon">✔</span> Body Profile Completed
-      </a>
+      {% if has_body_profile %}
+        <a class="quick-action completed" href="{% url 'body_profile' %}">
+          <span class="qa-icon">✔</span> Body Profile Completed
+        </a>
+      {% else %}
+        <a class="quick-action" href="{% url 'create_body_profile' %}">
+          <span class="qa-icon">➕</span> Create Body Profile
+        </a>
+      {% endif %}
       <a class="quick-action">
         <span class="qa-icon">👕</span> Upload Outfit
       </a>
@@ -474,33 +480,51 @@
         <p class="card-desc">Set up your measurements and body shape so the AI can make accurate style recommendations.</p>
 
         <ul class="profile-steps">
-          <li class="profile-step done-step">
-            <span class="step-check">✓</span> Basic measurements
+          <li class="profile-step {% if profile_steps.basic %}done-step{% endif %}">
+            <span class="step-check">{% if profile_steps.basic %}✓{% else %}○{% endif %}</span> Basic measurements
           </li>
-          <li class="profile-step done-step">
-            <span class="step-check">✓</span> Body shape selected
+          <li class="profile-step {% if profile_steps.shape %}done-step{% endif %}">
+            <span class="step-check">{% if profile_steps.shape %}✓{% else %}○{% endif %}</span> Body shape selected
           </li>
-          <li class="profile-step">
-            <span class="step-check">○</span> Photo uploaded
+          <li class="profile-step {% if profile_steps.photo %}done-step{% endif %}">
+            <span class="step-check">{% if profile_steps.photo %}✓{% else %}○{% endif %}</span> Photo uploaded
           </li>
-          <li class="profile-step">
-            <span class="step-check">○</span> Skin tone analyzed
+          <li class="profile-step {% if profile_steps.skin %}done-step{% endif %}">
+            <span class="step-check">{% if profile_steps.skin %}✓{% else %}○{% endif %}</span> Skin tone analyzed
           </li>
         </ul>
 
         <div class="progress-wrap">
           <div class="progress-label">
             <span>Profile completion</span>
-            <span>50%</span>
+            <span>{{ profile_progress_percent }}%</span>
           </div>
           <div class="progress-bar">
-            <div class="progress-fill" style="width: 50%"></div>
+            <div class="progress-fill" style="width: {{ profile_progress_percent }}%"></div>
           </div>
         </div>
 
-        <span class="status-badge pending">
-          <span class="status-dot"></span> In Progress
-        </span>
+        {% if has_body_profile and profile_progress_percent == 100 %}
+          <span class="status-badge done">
+            <span class="status-dot"></span> Completed
+          </span>
+        {% elif has_body_profile %}
+          <span class="status-badge pending">
+            <span class="status-dot"></span> In Progress
+          </span>
+        {% else %}
+          <span class="status-badge pending">
+            <span class="status-dot"></span> Not started
+          </span>
+        {% endif %}
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;">
+          {% if has_body_profile %}
+            <a href="{% url 'body_profile' %}" class="card-btn card-btn-primary">👤 Check your profile</a>
+          {% else %}
+            <a href="{% url 'create_body_profile' %}" class="card-btn card-btn-primary">➕ Create your body profile</a>
+          {% endif %}
+        </div>
       </div>
 
       <!-- ── Outfit Recommendations Card ── -->

@@ -24,4 +24,5 @@ urlpatterns = [
     path("", views.home, name="home"),
     path("users/", include("user.urls")),
     path("body_profile/", include("body_profile.urls")),
+    path("skin/", include("skin.urls")),
 ]

@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skin Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:      #1A1210;
+  --rose:     #B5614A;
+  --roselt:   #F0E0D6;
+  --sage:     #5C7A5E;
+  --sagelt:   #E8F0E8;
+  --cream:    #FAF6F1;
+  --paper:    #FFFFFF;
+  --border:   #E5DDD5;
+  --muted:    #7A6A5E;
+  --warn:     #C8820A;
+  --warnlt:   #FEF3DC;
+  --shadow:   rgba(26,18,16,0.07);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  font-family:'Jost',sans-serif;
+  background:var(--cream);
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;
+}
+
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 15% 15%,rgba(181,97,74,0.06),transparent),
+    radial-gradient(ellipse 50% 50% at 85% 85%,rgba(92,122,94,0.05),transparent);
+  pointer-events:none;z-index:0;
+}
+
+.wrap{position:relative;z-index:1;width:100%;max-width:580px}
+
+/* Header */
+.hdr{text-align:center;margin-bottom:32px}
+.hdr-tag{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--rose);font-weight:600;margin-bottom:10px}
+.hdr h1{font-family:'Playfair Display',serif;font-size:30px;color:var(--ink);line-height:1.25}
+.hdr h1 em{font-style:italic;color:var(--rose)}
+
+/* Progress */
+.prog-wrap{margin-bottom:28px}
+.prog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.prog-label{font-size:12px;font-weight:500;color:var(--rose)}
+.prog-count{font-size:11px;color:var(--muted)}
+.prog-track{height:2px;background:var(--border);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--rose),#D4896E);border-radius:2px;transition:width .4s ease}
+
+/* Card */
+.card{
+  background:var(--paper);border-radius:20px;padding:36px;
+  box-shadow:0 2px 20px var(--shadow);border:1px solid var(--border);
+}
+
+/* Step */
+.step{display:none}
+.step.active{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.step-tag{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:8px}
+.step-q{font-family:'Playfair Display',serif;font-size:21px;color:var(--ink);line-height:1.4;margin-bottom:6px}
+.step-hint{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.5;font-style:italic}
+
+/* Sub-group label */
+.sub-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:20px 0 10px}
+
+/* Options */
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{position:relative}
+.opt input{position:absolute;opacity:0;width:0;height:0}
+.opt label{
+  display:flex;align-items:center;gap:13px;
+  padding:13px 16px;border:1.5px solid var(--border);border-radius:11px;
+  cursor:pointer;transition:all .18s ease;
+  color:var(--ink);font-size:14px;background:var(--cream);user-select:none;
+}
+.opt label:hover{border-color:var(--rose);background:#FDF5F0}
+.opt input:checked+label{
+  border-color:var(--rose);background:linear-gradient(135deg,#FDF0EA,#FFFAF7);
+  font-weight:500;box-shadow:0 2px 10px rgba(181,97,74,.12);
+}
+.dot{
+  width:18px;height:18px;border-radius:50%;border:2px solid var(--border);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:all .18s ease;
+}
+.opt input:checked+label .dot{background:var(--rose);border-color:var(--rose)}
+.dot::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff;opacity:0;transition:opacity .18s}
+.opt input:checked+label .dot::after{opacity:1}
+
+/* Checkbox */
+.opt input[type=checkbox]+label .dot{border-radius:4px}
+.opt input[type=checkbox]:checked+label .dot::after{content:'✓';font-size:10px;font-weight:700;width:auto;height:auto;background:none;color:#fff;opacity:1}
+
+/* Grid for concerns */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.grid-2 .opt label{font-size:13px;padding:11px 13px}
+
+/* Counter */
+.counter{font-size:12px;color:var(--muted);text-align:right;margin-top:8px}
+.counter span{color:var(--rose);font-weight:600}
+
+/* Textarea */
+.plain-wrap{margin-top:6px}
+.plain-wrap textarea{
+  width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:11px;
+  font-family:'Jost',sans-serif;font-size:14px;color:var(--ink);background:var(--cream);
+  resize:vertical;min-height:110px;line-height:1.6;outline:none;transition:border .18s;
+}
+.plain-wrap textarea:focus{border-color:var(--rose)}
+.plain-wrap textarea::placeholder{color:var(--muted);font-style:italic}
+
+/* Nav */
+.nav{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:28px;padding-top:22px;border-top:1px solid var(--border);
+}
+.btn-back{background:none;border:none;color:var(--muted);font-family:'Jost',sans-serif;font-size:14px;cursor:pointer;padding:10px 0;display:flex;align-items:center;gap:5px;transition:color .18s}
+.btn-back:hover{color:var(--ink)}
+.btn-next,.btn-submit{
+  background:linear-gradient(135deg,var(--rose),#9E4F3A);color:#fff;border:none;
+  border-radius:11px;padding:13px 30px;font-family:'Jost',sans-serif;font-size:15px;
+  font-weight:600;cursor:pointer;letter-spacing:.3px;
+  transition:all .18s ease;box-shadow:0 4px 16px rgba(181,97,74,.3);
+}
+.btn-next:hover,.btn-submit:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(181,97,74,.4)}
+.btn-next:active,.btn-submit:active{transform:translateY(0)}
+
+/* Error */
+.err{display:none;background:#FEF2F2;border:1px solid #FECACA;color:#DC2626;border-radius:8px;padding:10px 14px;font-size:13px;margin-top:12px}
+.err.show{display:block}
+
+/* Age-gated note */
+.age-note{
+  background:var(--warnlt);border:1px solid #F0C060;border-radius:10px;
+  padding:12px 16px;font-size:13px;color:var(--warn);margin-bottom:20px;line-height:1.5;
+}
+
+/* Optional badge */
+.optional{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-left:8px;background:var(--border);padding:2px 7px;border-radius:10px}
+
+@media(max-width:480px){
+  .card{padding:24px 20px}
+  .grid-2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hdr">
+    <div class="hdr-tag">Skin Intelligence</div>
+    <h1>Your Personal<br><em>Skin Analysis</em></h1>
+  </div>
+
+  <div class="prog-wrap">
+    <div class="prog-top">
+      <span class="prog-label" id="progLabel">Step 1 of 9</span>
+      <span class="prog-count" id="progCount">After wash</span>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="progFill" style="width:11%"></div></div>
+  </div>
+
+  <div class="card">
+    {% if form_error %}
+    <div class="err show">{{ form_error }}</div>
+    {% endif %}
+
+    <form method="POST" id="form">
+      {% csrf_token %}
+
+      <!-- ═══ STEP 1 — After Wash ═══ -->
+      <div class="step active" data-step="1" data-required="radio" data-name="after_wash">
+        <div class="step-tag">Step 1 — Skin Behavior</div>
+        <div class="step-q">How does your face feel right after washing?</div>
+        <div class="step-hint">No products applied — just water and cleanser. This is your skin's raw baseline.</div>
+        <div class="opts">
+          <div class="opt"><input type="radio" name="after_wash" id="aw1" value="tight"><label for="aw1"><span class="dot"></span>Tight, rough or uncomfortable</label></div>
+          <div class="opt"><input type="radio" name="after_wash" id="aw2" value="normal"><label for="aw2"><span class="dot"></span>Normal and comfortable</label></div>
+          <div class="opt"><input type="radio" name="after_wash" id="aw3" value="oily"><label for="aw3"><span class="dot"></span>Already feels oily or greasy</label></div>
+        </div>
+      </div>
+
+      <!-- ═══ STEP 2 — After Hours ═══ -->
+      <div class="step" data-step="2" data-required="radio" data-name="after_hours">
+        <div class="step-tag">Step 2 — Skin Behavior</div>
+        <div class="step-q">How does your face look 2–3 hours later?</div>
+        <div class="step-hint">Still no products. Observe your skin's natural, uninfluenced behavior.</div>
+        <div class="opts">
+          <div class="opt"><input type="radio" name="after_hours" id="ah1" value="dry"><label for="ah1"><span class="dot"></span>Dry or tight all over</label></div>
+          <div class="opt"><input type="radio" name="after_hours" id="ah2" value="normal"><label for="ah2"><span class="dot"></span>Still feels comfortable — no change</label></div>
+          <div class="opt"><input type="radio" name="after_hours" id="ah3" value="oily_tzone"><label for="ah3"><span class="dot"></span>Shiny only on forehead and nose (T-zone)</label></div>
+          <div class="opt"><input type="radio" name="after_hours" id="ah4" value="very_oily"><label for="ah4"><span class="dot"></span>Shiny or oily all over the face</label></div>
+        </div>
+      </div>
+
+      <!-- ═══ STEP 3 — Texture ═══ -->
+      <div class="step" data-step="3" data-required="double" data-names="pores,flaky">
+        <div class="step-tag">Step 3 — Texture Signals</div>
+        <div class="step-q">Two quick texture questions</div>
+        <div class="step-hint">These fine-tune your skin type accuracy — especially for the dehydration and oil detection.</div>
+        <div class="sub-label">Pore visibility on your nose and cheeks</div>
+        <div class="opts">
+          <div class="opt"><input type="radio" name="pores" id="p1" value="not_visible"><label for="p1"><span class="dot"></span>Not really visible</label></div>
+          <div class="opt"><input type="radio" name="pores" id="p2" value="visible"><label for="p2"><span class="dot"></span>Somewhat visible, especially on nose</label></div>
+          <div class="opt"><input type="radio" name="pores" id="p3" value="very_visible"><label for="p3"><span class="dot"></span>Very visible on cheeks and nose</label></div>
+        </div>
+        <div class="sub-label">Flaky or dry patches</div>
+        <div class="opts">
+          <!-- FIX: added "winter only" option to separate seasonal from chronic flaking -->
+          <!-- In logic.py, flaky is ignored when oil >= 3, but better question = better data -->
+          <div class="opt"><input type="radio" name="flaky" id="f1" value="no"><label for="f1"><span class="dot"></span>No, never</label></div>
+          <div class="opt"><input type="radio" name="flaky" id="f2" value="seasonal"><label for="f2"><span class="dot"></span>Only in winter or cold/AC weather — not normally</label></div>
+          <div class="opt"><input type="radio" name="flaky" id="f3" value="sometimes"><label for="f3"><span class="dot"></span>Sometimes throughout the year</label></div>
+          <div class="opt"><input type="radio" name="flaky" id="f4" value="yes_often"><label for="f4"><span class="dot"></span>Yes, often — around nose, mouth or cheeks year-round</label></div>
+        </div>
+      </div>
+
+      <!-- ═══ STEP 4 — Concerns ═══ -->
+      <div class="step" data-step="4" data-required="concern" data-name="concerns">
+        <div class="step-tag">Step 4 — Your Concerns</div>
+        <div class="step-q">What are your biggest skin worries right now?</div>
+        <div class="step-hint">Pick up to 3. Or select "My skin is fine" if you have no specific concerns.</div>
+        <div class="grid-2" id="concernGrid">
+          <div class="opt"><input type="checkbox" name="concerns" id="c1" value="acne"><label for="c1"><span class="dot"></span>Pimples / Acne</label></div>
+          <div class="opt"><input type="checkbox" name="concerns" id="c2" value="pigmentation"><label for="c2"><span class="dot"></span>Dark spots / Uneven tone</label></div>
+          <div class="opt"><input type="checkbox" name="concerns" id="c3" value="dullness"><label for="c3"><span class="dot"></span>Dull / Tired skin</label></div>
+          <div class="opt"><input type="checkbox" name="concerns" id="c4" value="dryness"><label for="c4"><span class="dot"></span>Dry patches / Peeling</label></div>
+          <div class="opt"><input type="checkbox" name="concerns" id="c5" value="excess_oil"><label for="c5"><span class="dot"></span>Too oily / Greasy</label></div>
+          <div class="opt"><input type="checkbox" name="concerns" id="c6" value="sensitivity"><label for="c6"><span class="dot"></span>Redness / Irritation</label></div>
+          <div class="opt"><input type="checkbox" name="concerns" id="c7" value="dark_circles"><label for="c7"><span class="dot"></span>Dark circles</label></div>
+          <div class="opt"><input type="checkbox" name="concerns" id="c8" value="comedones"><label for="c8"><span class="dot"></span>Blackheads / Whiteheads</label></div>
+          <!-- Aging only shown for 28+ — injected by JS after age step -->
+          <div class="opt" id="aging-opt" style="display:none"><input type="checkbox" name="concerns" id="c9" value="aging"><label for="c9"><span class="dot"></span>Fine lines / Aging signs</label></div>
+        </div>
+        <!-- None option — full width, visually separated -->
+        <div style="margin-top:12px">
+          <div class="opt" id="none-opt">
+            <input type="checkbox" name="concerns" id="c_none" value="none">
+            <label for="c_none" style="border-color:#A0C0A2;background:#F0F7F0">
+              <span class="dot" style="border-color:#A0C0A2"></span>
+              My skin is generally fine — no major concerns
+            </label>
+          </div>
+        </div>
+        <div class="counter">Selected: <span id="cCount">0</span> / 3 &nbsp;·&nbsp; <span id="cHint" style="color:var(--sage)"></span></div>
+      </div>
+
+      <!-- ═══ STEP 5 — Skin Story (Plain Text) ═══ -->
+      <div class="step" data-step="5" data-required="none">
+        <div class="step-tag">Step 5 — Your Skin in Your Words <span class="optional">Optional</span></div>
+        <div class="step-q">Describe your skin the way you'd tell a friend</div>
+        <div class="step-hint">Any problems, history, or things you've noticed that the questions didn't cover. The more detail you give, the more the engine can cross-check and catch what you might have missed.</div>
+        <div class="plain-wrap">
+          <textarea name="plain_text_input" id="plainText" placeholder="Example: my skin gets really oily by lunch but feels tight after washing. I get pimples around my chin every month. I have dark marks from old pimples that won't fade. My under-eyes always look dark even after sleep..."></textarea>
+        </div>
+        <div style="margin-top:14px;padding:12px 14px;background:var(--sagelt);border-radius:10px;border:1px solid #A0C0A2">
+          <p style="font-size:12px;color:var(--sage);line-height:1.6">
+            <strong>Why we ask this:</strong> Your written description is scanned for skin keywords and cross-checked against your answers. If you mention something you didn't select — like dark spots or sensitivity — we'll detect it and add it to your analysis. You'll see exactly what we found on the next screen before your routine is shown.
+          </p>
+        </div>
+      </div>
+
+      <!-- ═══ STEP 6 — Sensitivity ═══ -->
+      <div class="step" data-step="6" data-required="radio" data-name="reaction">
+        <div class="step-tag">Step 6 — Sensitivity</div>
+        <div class="step-q">How does your skin react to new products?</div>
+        <div class="step-hint">Think about the last time you tried a new cleanser, moisturizer or serum.</div>
+        <div class="opts">
+          <div class="opt"><input type="radio" name="reaction" id="r1" value="fine"><label for="r1"><span class="dot"></span>Usually fine — I can try most things</label></div>
+          <div class="opt"><input type="radio" name="reaction" id="r2" value="slight"><label for="r2"><span class="dot"></span>Sometimes gets slightly red or itchy</label></div>
+          <div class="opt"><input type="radio" name="reaction" id="r3" value="redness"><label for="r3"><span class="dot"></span>Often reacts — redness, bumps or breakouts</label></div>
+          <div class="opt"><input type="radio" name="reaction" id="r4" value="burning"><label for="r4"><span class="dot"></span>Very reactive — burns, stings or flares up easily</label></div>
+        </div>
+      </div>
+
+      <!-- ═══ STEP 7 — Age Group ═══ -->
+      <div class="step" data-step="7" data-required="radio" data-name="age_group" data-id="step-age">
+        <div class="step-tag">Step 7 — Age & Experience</div>
+        <div class="step-q">Which age group are you in?</div>
+        <div class="step-hint">Age determines which concerns and ingredients are relevant to you. Younger skin and mature skin need different approaches.</div>
+        <div class="opts">
+          <div class="opt"><input type="radio" name="age_group" id="ag1" value="teen"><label for="ag1"><span class="dot"></span>Under 20</label></div>
+          <div class="opt"><input type="radio" name="age_group" id="ag2" value="adult_20_27"><label for="ag2"><span class="dot"></span>20–27</label></div>
+          <div class="opt"><input type="radio" name="age_group" id="ag3" value="adult_28_35"><label for="ag3"><span class="dot"></span>28–35</label></div>
+          <div class="opt"><input type="radio" name="age_group" id="ag4" value="adult_35_plus"><label for="ag4"><span class="dot"></span>35 or older</label></div>
+        </div>
+      </div>
+
+      <!-- ═══ STEP 8 — Experience ═══ -->
+      <div class="step" data-step="8" data-required="radio" data-name="experience">
+        <div class="step-tag">Step 8 — Current Routine</div>
+        <div class="step-q">What does your current skincare routine look like?</div>
+        <div class="step-hint">Be honest — your routine is matched to where you actually are, not where you want to be.</div>
+        <div class="opts">
+          <div class="opt"><input type="radio" name="experience" id="e1" value="none"><label for="e1"><span class="dot"></span>I use nothing right now</label></div>
+          <div class="opt"><input type="radio" name="experience" id="e2" value="basic"><label for="e2"><span class="dot"></span>Just face wash — nothing else</label></div>
+          <div class="opt"><input type="radio" name="experience" id="e3" value="intermediate"><label for="e3"><span class="dot"></span>A few products — wash, moisturizer, maybe SPF</label></div>
+          <div class="opt"><input type="radio" name="experience" id="e4" value="advanced"><label for="e4"><span class="dot"></span>Full routine — serums, actives, multiple steps</label></div>
+        </div>
+      </div>
+
+      <!-- ═══ STEP 9 — Sleep ═══ -->
+      <div class="step" data-step="9" data-required="radio" data-name="sleep">
+        <div class="step-tag">Step 9 — Recovery</div>
+        <div class="step-q">How many hours do you sleep on average?</div>
+        <div class="step-hint">Sleep affects dullness, dark circles, and skin repair. It is a real and measurable signal — not a filler question.</div>
+        <div class="opts">
+          <div class="opt"><input type="radio" name="sleep" id="s1" value="<5"><label for="s1"><span class="dot"></span>Less than 5 hours</label></div>
+          <div class="opt"><input type="radio" name="sleep" id="s2" value="5-6"><label for="s2"><span class="dot"></span>5–6 hours</label></div>
+          <div class="opt"><input type="radio" name="sleep" id="s3" value="6-7"><label for="s3"><span class="dot"></span>6–7 hours</label></div>
+          <div class="opt"><input type="radio" name="sleep" id="s4" value="7-8"><label for="s4"><span class="dot"></span>7–8 hours or more</label></div>
+        </div>
+      </div>
+
+      <!-- ═══ STEP 10 — Sun Exposure ═══ -->
+      <div class="step" data-step="10" data-required="radio" data-name="sun_exposure">
+        <div class="step-tag">Step 10 — Sun Exposure</div>
+        <div class="step-q">How much direct sun do you get daily?</div>
+        <div class="step-hint">Bangladesh's UV Index reaches 9–11 from March to October. Your answer changes the SPF recommendation and affects pigmentation and dullness treatment.</div>
+        <div class="opts">
+          <div class="opt"><input type="radio" name="sun_exposure" id="sun1" value="low_sun"><label for="sun1"><span class="dot"></span>Mostly indoors — office or home</label></div>
+          <div class="opt"><input type="radio" name="sun_exposure" id="sun2" value="medium_sun"><label for="sun2"><span class="dot"></span>Outdoors 1–2 hours daily (commuting, errands)</label></div>
+          <div class="opt"><input type="radio" name="sun_exposure" id="sun3" value="high_sun"><label for="sun3"><span class="dot"></span>Outdoors most of the day</label></div>
+        </div>
+      </div>
+
+      <div id="errMsg" class="err">Please make a selection to continue.</div>
+
+      <div class="nav">
+        <button type="button" class="btn-back" id="backBtn" onclick="prev()" style="visibility:hidden">← Back</button>
+        <button type="button" class="btn-next" id="nextBtn" onclick="next()">Continue →</button>
+        <button type="submit" class="btn-submit" id="submitBtn" style="display:none">Analyse My Skin ✦</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const TOTAL = 10;
+let cur = 0;
+const steps = document.querySelectorAll('.step');
+
+const stepMeta = [
+  {label:'After wash'},   {label:'After hours'},  {label:'Texture'},
+  {label:'Concerns'},     {label:'Your words'},   {label:'Sensitivity'},
+  {label:'Age group'},    {label:'Routine'},       {label:'Sleep'},
+  {label:'Sun exposure'},
+];
+
+function updateUI(){
+  const pct = ((cur+1)/TOTAL)*100;
+  document.getElementById('progFill').style.width = pct+'%';
+  document.getElementById('progLabel').textContent = `Step ${cur+1} of ${TOTAL}`;
+  document.getElementById('progCount').textContent = stepMeta[cur].label;
+  document.getElementById('backBtn').style.visibility = cur > 0 ? 'visible' : 'hidden';
+}
+
+function validate(){
+  const step = steps[cur];
+  const req  = step.dataset.required;
+  if(req === 'none') return true;
+
+  if(req === 'radio'){
+    const name = step.dataset.name;
+    return !!document.querySelector(`input[name="${name}"]:checked`);
+  }
+  if(req === 'double'){
+    const names = step.dataset.names.split(',');
+    return names.every(n => document.querySelector(`input[name="${n}"]:checked`));
+  }
+  if(req === 'concern'){
+    // Valid if: at least 1 concern selected OR "none" selected
+    const anyChecked = document.querySelectorAll('input[name="concerns"]:checked').length > 0;
+    return anyChecked;
+  }
+  return true;
+}
+
+function next(){
+  const errEl = document.getElementById('errMsg');
+  if(!validate()){ errEl.classList.add('show'); return; }
+  errEl.classList.remove('show');
+
+  // After age step (step 7) — show/hide aging option
+  if(steps[cur].dataset.step === '7'){
+    const ag = document.querySelector('input[name="age_group"]:checked');
+    const showAging = ag && ['adult_28_35','adult_35_plus'].includes(ag.value);
+    document.getElementById('aging-opt').style.display = showAging ? '' : 'none';
+  }
+
+  steps[cur].classList.remove('active');
+  cur++;
+  if(cur < steps.length) steps[cur].classList.add('active');
+  updateUI();
+
+  if(cur === steps.length - 1){
+    document.getElementById('nextBtn').style.display = 'none';
+    document.getElementById('submitBtn').style.display = 'inline-block';
+  } else {
+    document.getElementById('nextBtn').style.display = 'inline-block';
+    document.getElementById('submitBtn').style.display = 'none';
+  }
+}
+
+function prev(){
+  if(cur === 0) return;
+  document.getElementById('errMsg').classList.remove('show');
+  steps[cur].classList.remove('active');
+  cur--;
+  steps[cur].classList.add('active');
+  updateUI();
+  document.getElementById('nextBtn').style.display = 'inline-block';
+  document.getElementById('submitBtn').style.display = 'none';
+}
+
+// ── Concern logic — max 3, none is mutually exclusive ──────────────────────
+const cbs     = document.querySelectorAll('input[name="concerns"]');
+const cNone   = document.getElementById('c_none');
+const cCount  = document.getElementById('cCount');
+const cHint   = document.getElementById('cHint');
+const nonOpt  = document.getElementById('none-opt');
+
+function updateConcernState(){
+  const allChecked = Array.from(document.querySelectorAll('input[name="concerns"]:checked'));
+  const noneSelected = cNone && cNone.checked;
+  const concernsSelected = allChecked.filter(c => c.value !== 'none');
+  const count = concernsSelected.length;
+
+  cCount.textContent = noneSelected ? '0' : count;
+
+  if(noneSelected){
+    // Disable all concern checkboxes
+    cbs.forEach(c => {
+      if(c.value !== 'none'){
+        c.disabled = true;
+        c.checked  = false;
+        c.closest('.opt').style.opacity = '.35';
+      }
+    });
+    cHint.textContent = 'Great — we\'ll build a prevention routine based on your skin type.';
+  } else if(count >= 3){
+    // Max 3 reached — disable unselected
+    cbs.forEach(c => {
+      if(!c.checked && c.value !== 'none'){
+        c.disabled = true;
+        c.closest('.opt').style.opacity = '.4';
+      }
+    });
+    // Disable the none option too
+    if(cNone){ cNone.disabled = true; nonOpt.style.opacity = '.4'; }
+    cHint.textContent = 'Maximum 3 selected.';
+  } else {
+    // Reset all
+    cbs.forEach(c => {
+      c.disabled = false;
+      c.closest('.opt').style.opacity = '1';
+    });
+    cHint.textContent = '';
+  }
+}
+
+cbs.forEach(cb => {
+  cb.addEventListener('change', () => {
+    // If user selects a concern while none is checked, uncheck none
+    if(cb.value !== 'none' && cb.checked && cNone && cNone.checked){
+      cNone.checked = false;
+    }
+    // If user selects none, uncheck everything else
+    if(cb.value === 'none' && cb.checked){
+      cbs.forEach(c => { if(c.value !== 'none'){ c.checked = false; } });
+    }
+    updateConcernState();
+  });
+});
+
+updateUI();
+</script>
+</body>
+</html>

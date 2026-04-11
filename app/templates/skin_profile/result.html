@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Skin Results</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1A1210;--rose:#B5614A;--roselt:#F0E0D6;--sage:#5C7A5E;--sagelt:#E8F0E8;
+  --cream:#FAF6F1;--paper:#FFFFFF;--border:#E5DDD5;--muted:#7A6A5E;
+  --warn:#C8820A;--warnlt:#FEF3DC;--blue:#1E5FA0;--bluelt:#EBF3FD;
+  --shadow:rgba(26,18,16,0.07);
+  --ph1:#EEF4EF;--ph2:#EBF3FD;--ph3:#F4EEF9;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Jost',sans-serif;background:var(--cream);min-height:100vh;padding:32px 24px 100px}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 15% 10%,rgba(181,97,74,0.06),transparent),radial-gradient(ellipse 50% 50% at 85% 90%,rgba(92,122,94,0.05),transparent);pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:700px;margin:0 auto}
+
+/* Header */
+.hdr{text-align:center;margin-bottom:40px}
+.hdr-tag{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--rose);font-weight:600;margin-bottom:10px}
+.hdr h1{font-family:'Playfair Display',serif;font-size:32px;color:var(--ink);margin-bottom:6px}
+.hdr p{font-size:14px;color:var(--muted)}
+
+/* Card base */
+.card{background:var(--paper);border-radius:18px;padding:26px 30px;margin-bottom:14px;border:1px solid var(--border);box-shadow:0 2px 14px var(--shadow);animation:fadeUp .35s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.card:nth-child(2){animation-delay:.05s}.card:nth-child(3){animation-delay:.10s}.card:nth-child(4){animation-delay:.15s}.card:nth-child(5){animation-delay:.20s}.card:nth-child(6){animation-delay:.25s}.card:nth-child(7){animation-delay:.30s}.card:nth-child(8){animation-delay:.35s}
+
+.card-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:12px}
+
+/* Story card */
+.story-card{background:linear-gradient(135deg,var(--ink),#3A2218);border-color:transparent}
+.story-card .card-label{color:rgba(255,255,255,.4)}
+.story-text{font-family:'Playfair Display',serif;font-size:15px;color:rgba(255,255,255,.88);line-height:1.75;font-style:italic}
+
+/* Skin type hero */
+.type-hero{background:linear-gradient(135deg,#2C1810,#4A2A1A);border-color:transparent;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.type-hero .card-label{color:rgba(255,255,255,.4)}
+.type-val{font-family:'Playfair Display',serif;font-size:38px;color:#fff;line-height:1;margin-bottom:4px}
+.type-desc{font-size:13px;color:rgba(255,255,255,.6);line-height:1.5;max-width:320px}
+.type-emoji{font-size:36px;flex-shrink:0}
+
+/* States */
+.states-wrap{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:14px}
+.state-tag{background:var(--warnlt);border:1px solid #F0C060;border-radius:20px;padding:7px 15px;font-size:13px;color:var(--warn);font-weight:500}
+.state-reason{font-size:13px;color:var(--muted);line-height:1.5;padding:6px 0;border-bottom:1px solid var(--border)}
+.state-reason:last-child{border-bottom:none}
+
+/* Concerns */
+.concern-tags{display:flex;flex-wrap:wrap;gap:9px}
+.c-tag{background:var(--roselt);border:1px solid #D4A090;border-radius:20px;padding:8px 16px;font-size:13px;color:var(--rose);font-weight:500}
+
+/* Conflict banner */
+.conflict-banner{background:linear-gradient(135deg,#FFF3E0,#FFFAF5);border:1.5px solid #FFB74D;border-radius:14px;padding:18px 22px;margin-bottom:14px}
+.conflict-title{font-family:'Playfair Display',serif;font-size:17px;color:#E65100;margin-bottom:6px}
+.conflict-text{font-size:13px;color:#BF360C;line-height:1.6}
+
+/* Phased routine */
+.phase-card{border-radius:14px;padding:22px 24px;margin-bottom:11px;border:1.5px solid}
+.phase-1{background:var(--ph1);border-color:#B2D8B5}
+.phase-2{background:var(--ph2);border-color:#90CAE8}
+.phase-3{background:var(--ph3);border-color:#C5A8E0}
+.phase-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.phase-title{font-family:'Playfair Display',serif;font-size:17px;color:var(--ink)}
+.phase-dur{font-size:11px;font-weight:600;color:var(--muted);background:rgba(255,255,255,.7);padding:3px 10px;border-radius:10px}
+.phase-focus{font-size:13px;color:var(--muted);font-style:italic;margin-bottom:16px;line-height:1.5}
+.routine-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.col-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin-bottom:10px}
+.steps-list{list-style:none;display:flex;flex-direction:column;gap:9px}
+.step-row{display:flex;gap:10px;align-items:flex-start}
+.step-num{width:20px;height:20px;border-radius:50%;background:var(--rose);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.step-body{flex:1}
+.step-type{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:2px}
+.step-inst{font-size:13px;color:var(--ink);line-height:1.4}
+.step-why{font-size:11px;color:var(--muted);font-style:italic;margin-top:2px;line-height:1.3}
+
+/* Standard routine */
+.routine-section{background:var(--cream);border-radius:12px;padding:20px;margin-bottom:10px;border:1px solid var(--border)}
+.routine-title{font-family:'Playfair Display',serif;font-size:15px;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+
+/* Ingredient intelligence */
+.ing-list{display:flex;flex-direction:column;gap:10px}
+.ing-item{display:flex;gap:12px;padding:12px;background:var(--cream);border-radius:10px;border:1px solid var(--border)}
+.ing-badge{background:var(--roselt);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;color:var(--rose);flex-shrink:0;align-self:flex-start;white-space:nowrap}
+.ing-info{}
+.ing-label{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:3px}
+.ing-why{font-size:12px;color:var(--muted);line-height:1.4}
+.ing-time{font-size:11px;color:var(--sage);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
+
+/* Avoid */
+.avoid-tags{display:flex;flex-wrap:wrap;gap:8px}
+.avoid-tag{background:#FEF2F2;border:1px solid #FECACA;border-radius:20px;padding:6px 13px;font-size:12px;color:#DC2626;font-weight:500}
+
+/* Dullness causes */
+.cause-list{display:flex;flex-wrap:wrap;gap:9px}
+.cause-tag{background:var(--bluelt);border:1px solid #93C5FD;border-radius:20px;padding:7px 14px;font-size:13px;color:var(--blue);font-weight:500}
+
+/* Timeline */
+.timeline-card{background:var(--bluelt);border-color:#93C5FD}
+.timeline-card .card-label{color:var(--blue)}
+.timeline-weeks{font-family:'Playfair Display',serif;font-size:30px;color:var(--blue);margin-bottom:6px}
+.timeline-weeks span{font-size:14px;font-family:'Jost',sans-serif;color:#3B82F6}
+.timeline-msg{font-size:14px;color:#1E3A5F;line-height:1.6;margin-bottom:10px}
+.purge-warn{background:#FFFBEB;border:1px solid #FCD34D;border-radius:10px;padding:10px 14px;font-size:13px;color:#92400E;line-height:1.5}
+
+/* Next goal */
+.goal-card{background:var(--sagelt);border-color:#A0C0A2}
+.goal-card .card-label{color:var(--sage)}
+.goal-text{font-size:14px;color:#1A4A1D;line-height:1.6}
+
+/* Issues */
+.issue-card{background:var(--warnlt);border-color:#F0C060}
+.issue-card .card-label{color:var(--warn)}
+.issue-list{list-style:none}
+.issue-list li{font-size:13px;color:var(--warn);padding:6px 0;padding-left:18px;position:relative;line-height:1.5;border-bottom:1px solid rgba(240,192,96,.3)}
+.issue-list li:last-child{border-bottom:none}
+.issue-list li::before{content:'→';position:absolute;left:0;font-weight:700}
+
+/* Why/reasoning */
+.reason-list{list-style:none}
+.reason-list li{font-size:13px;color:var(--muted);padding:6px 0;padding-left:16px;position:relative;border-bottom:1px solid var(--border);line-height:1.4}
+.reason-list li:last-child{border-bottom:none}
+.reason-list li::before{content:'·';position:absolute;left:2px;color:var(--rose);font-size:18px;line-height:1}
+
+/* Start card */
+.start-card{background:linear-gradient(135deg,var(--ink),#3A2218);border-color:transparent;text-align:center;padding:36px 30px}
+.start-card .card-label{color:rgba(255,255,255,.4)}
+.start-title{font-family:'Playfair Display',serif;font-size:22px;color:#fff;margin-bottom:8px}
+.start-sub{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:24px;line-height:1.6}
+.btn-start{background:linear-gradient(135deg,var(--rose),#9E4F3A);color:#fff;border:none;border-radius:12px;padding:15px 38px;font-family:'Jost',sans-serif;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.3);transition:all .18s ease}
+.btn-start:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(0,0,0,.4)}
+.started-msg{display:none;background:rgba(92,122,94,.2);border:1px solid rgba(92,122,94,.4);border-radius:12px;padding:14px 20px;font-size:14px;color:#A8D5AB;margin-top:16px;line-height:1.5}
+.start-note{font-size:11px;color:rgba(255,255,255,.3);margin-top:12px}
+
+@media(max-width:540px){
+  .routine-cols{grid-template-columns:1fr}
+  .type-emoji{display:none}
+  .card{padding:20px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hdr">
+    <div class="hdr-tag">Analysis Complete</div>
+    <h1>Your Skin Profile</h1>
+    <p>Personalized analysis based on your answers and behavioral signals</p>
+  </div>
+
+  <!-- ═══ SKIN STORY ═══ -->
+  <div class="card story-card">
+    <div class="card-label">Your Skin Story</div>
+    <div class="story-text">{{ skin_story }}</div>
+  </div>
+
+  <!-- ═══ SKIN TYPE ═══ -->
+  <div class="card type-hero">
+    <div>
+      <div class="card-label">Skin Type</div>
+      <div class="type-val">{{ skin_type }}</div>
+      <div class="type-desc">
+        {% if skin_type == "Oily" %}Consistent sebum overproduction throughout the day. Focus: regulation without stripping.
+        {% elif skin_type == "Dry" %}Below-average natural oil, barrier weakness. Focus: hydration and lipid repair.
+        {% elif skin_type == "Combination" %}T-zone oily, cheeks balanced or dry. Focus: zone-appropriate balance.
+        {% else %}Relatively balanced. Focus: maintenance and targeted concerns.{% endif %}
+      </div>
+    </div>
+    <div class="type-emoji">
+      {% if skin_type == "Oily" %}💧{% elif skin_type == "Dry" %}🌿{% elif skin_type == "Combination" %}⚖️{% else %}✨{% endif %}
+    </div>
+  </div>
+
+  <!-- ═══ SKIN STATES ═══ -->
+  {% if skin_states %}
+  <div class="card">
+    <div class="card-label">Active Skin States</div>
+    <div class="states-wrap">
+      {% for state in skin_states %}
+        <div class="state-tag">⚡ {{ state.state }}</div>
+      {% endfor %}
+    </div>
+    {% for state in skin_states %}
+      <div class="state-reason"><strong>{{ state.state }}:</strong> {{ state.reason }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- ═══ TOP CONCERNS ═══ -->
+  {% if top_concerns %}
+  <div class="card">
+    <div class="card-label">Your Top Concerns</div>
+    <div class="concern-tags">
+      {% for c in top_concerns %}
+        <div class="c-tag">{{ c|title|cut:"_" }}</div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ═══ ISSUES / CORRECTIONS ═══ -->
+  {% if issues %}
+  <div class="card issue-card">
+    <div class="card-label">Auto-Corrections Applied</div>
+    <ul class="issue-list">
+      {% for issue in issues %}
+        <li>{{ issue }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <!-- ═══ CONFLICT BANNER ═══ -->
+  {% if conflict_detected %}
+  <div class="conflict-banner">
+    <div class="conflict-title">Your skin needs a phased approach</div>
+    <div class="conflict-text">Your concerns conflict at the ingredient level — rushing actives will make things worse, not better. We've built a 3-phase plan that introduces ingredients in the correct order. Follow each phase fully before moving to the next.</div>
+  </div>
+  {% endif %}
+
+  <!-- ═══ ROUTINE — PHASED ═══ -->
+  {% if recommendation.mode == "phased" %}
+  <div class="card">
+    <div class="card-label">Your Phased Skincare Routine</div>
+    {% for phase in recommendation.phases %}
+    <div class="phase-card phase-{{ phase.number }}">
+      <div class="phase-hdr">
+        <div class="phase-title">{{ phase.label }}</div>
+        <div class="phase-dur">{{ phase.duration }}</div>
+      </div>
+      <div class="phase-focus">{{ phase.focus }}</div>
+      <div class="routine-cols">
+        <div>
+          <div class="col-label">☀ Morning</div>
+          <ul class="steps-list">
+            {% for step in phase.morning %}
+            <li class="step-row">
+              <div class="step-num">{{ step.step }}</div>
+              <div class="step-body">
+                <div class="step-type">{{ step.type }}</div>
+                <div class="step-inst">{{ step.instruction }}</div>
+                {% if step.why %}<div class="step-why">{{ step.why }}</div>{% endif %}
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div>
+          <div class="col-label">🌙 Night</div>
+          <ul class="steps-list">
+            {% for step in phase.night %}
+            <li class="step-row">
+              <div class="step-num">{{ step.step }}</div>
+              <div class="step-body">
+                <div class="step-type">{{ step.type }}</div>
+                <div class="step-inst">{{ step.instruction }}</div>
+                {% if step.why %}<div class="step-why">{{ step.why }}</div>{% endif %}
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    {% if recommendation.notes %}
+    <div style="margin-top:14px;padding:14px;background:var(--cream);border-radius:10px">
+      {% for note in recommendation.notes %}
+        <div style="font-size:13px;color:var(--muted);padding:5px 0;border-bottom:1px solid var(--border);line-height:1.5">→ {{ note }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ═══ ROUTINE — STANDARD ═══ -->
+  {% elif recommendation.mode == "standard" %}
+  <div class="card">
+    <div class="card-label">Your Daily Routine</div>
+
+    <div class="routine-section">
+      <div class="routine-title">☀ Morning Routine</div>
+      <ul class="steps-list">
+        {% for step in recommendation.morning %}
+        <li class="step-row">
+          <div class="step-num">{{ step.step }}</div>
+          <div class="step-body">
+            <div class="step-type">{{ step.type }}</div>
+            <div class="step-inst">{{ step.instruction }}</div>
+            {% if step.why %}<div class="step-why">{{ step.why }}</div>{% endif %}
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="routine-section">
+      <div class="routine-title">🌙 Night Routine</div>
+      <ul class="steps-list">
+        {% for step in recommendation.night %}
+        <li class="step-row">
+          <div class="step-num">{{ step.step }}</div>
+          <div class="step-body">
+            <div class="step-type">{{ step.type }}</div>
+            <div class="step-inst">{{ step.instruction }}</div>
+            {% if step.why %}<div class="step-why">{{ step.why }}</div>{% endif %}
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ═══ INGREDIENT INTELLIGENCE ═══ -->
+  {% if recommendation.mode == "standard" and recommendation.ingredients_used %}
+  <div class="card">
+    <div class="card-label">Why Each Ingredient Was Chosen</div>
+    <div class="ing-list">
+      {% for ing in recommendation.ingredients_used %}
+      <div class="ing-item">
+        <div class="ing-badge">{{ ing.time }}</div>
+        <div class="ing-info">
+          <div class="ing-label">{{ ing.label }}</div>
+          <div class="ing-why">{{ ing.why }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if recommendation.mode == "phased" %}
+  <!-- FIX Bug 1: for phased routines, collect hero ingredients from each phase -->
+  <div class="card">
+    <div class="card-label">Hero Ingredients Across All Phases</div>
+    <div class="ing-list">
+      <div class="ing-item">
+        <div class="ing-badge">Ph 1</div>
+        <div class="ing-info">
+          <div class="ing-label">Ceramides · Centella Asiatica · Panthenol{% if recommendation.phases.0.hero_ingredients %} · Hyaluronic Acid{% endif %}</div>
+          <div class="ing-why">Phase 1 barrier repair stack — no actives, all barrier-safe. These rebuild your skin's foundation before anything else is introduced.</div>
+        </div>
+      </div>
+      <div class="ing-item">
+        <div class="ing-badge">Ph 2</div>
+        <div class="ing-info">
+          <div class="ing-label">Niacinamide 5%</div>
+          <div class="ing-why">The bridge ingredient — simultaneously treats acne, pigmentation, and barrier without conflicting with either concern. Introduced only after Phase 1 is complete.</div>
+        </div>
+      </div>
+      <div class="ing-item">
+        <div class="ing-badge">Ph 3</div>
+        <div class="ing-info">
+          <div class="ing-label">Niacinamide 5% + Azelaic Acid 10%</div>
+          <div class="ing-why">Azelaic Acid is the only ingredient that treats acne AND fades marks while being gentle enough for sensitive and dry skin. Added only when barrier is fully stable.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ═══ DULLNESS CAUSES ═══ -->
+  {% if dullness_causes %}
+  <div class="card">
+    <div class="card-label">Why Your Skin Looks Dull</div>
+    <div class="cause-list">
+      {% for cause in dullness_causes %}
+        <div class="cause-tag">{{ cause.label }}</div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ═══ AVOID LIST ═══ -->
+  {% if recommendation.avoid %}
+  <div class="card">
+    <div class="card-label">Ingredients to Avoid</div>
+    <div class="avoid-tags">
+      {% for item in recommendation.avoid %}
+        <div class="avoid-tag">✕ {{ item }}</div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ═══ TIMELINE ═══ -->
+  {% if timeline %}
+  <div class="card timeline-card">
+    <div class="card-label">What to Expect</div>
+    <div class="timeline-weeks">{{ timeline.weeks }} weeks <span>for first results</span></div>
+    <div class="timeline-msg">{{ timeline.popup }}</div>
+    {% if timeline.purge_warning %}
+    <div class="purge-warn">⚠ Purge warning: Your skin may look slightly worse in weeks 1–2. This is the active accelerating cell turnover and clearing congestion. It is normal. Do not stop.</div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- ═══ NEXT GOAL ═══ -->
+  {% if next_goal %}
+  <div class="card goal-card">
+    <div class="card-label">Your Next Goal</div>
+    <div class="goal-text">{{ next_goal }}</div>
+  </div>
+  {% endif %}
+
+  <!-- ═══ REASONING TRACE ═══ -->
+  {% if reasoning %}
+  <div class="card">
+    <div class="card-label">How We Reached This Result</div>
+    <ul class="reason-list">
+      {% for r in reasoning %}
+        <li>{{ r }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <!-- ═══ START HOOK ═══ -->
+  <div class="card start-card">
+    <div class="card-label">Begin Your Journey</div>
+    <div class="start-title">Start Your Routine Today</div>
+    <div class="start-sub">Tap to lock in your start date. We'll track your progress milestones from today.</div>
+    <button class="btn-start" id="startBtn" onclick="startRoutine()">I'm Starting My Routine ✦</button>
+    <div class="started-msg" id="startedMsg">
+      ✓ Started on <strong id="startDate"></strong><br>
+      Your first milestone check-in: <strong id="milestone"></strong>
+    </div>
+    <div class="start-note">Start date saved locally — Phase 2 will sync this to your account.</div>
+  </div>
+
+</div>
+
+<script>
+const concern   = "{{ top_concerns.0 }}";
+const timelineWks = "{{ timeline.weeks }}";
+
+const milestoneWeeks = {
+  "acne": 4, "pigmentation": 8, "dullness": 2, "dryness": 2,
+  "sensitivity": 4, "dehydration": 1, "oiliness": 4, "dark_circles": 6,
+  "comedones": 4, "aging": 12, "barrier_damage_acne": 6,
+};
+
+function startRoutine(){
+  const now  = new Date();
+  const wks  = milestoneWeeks[concern] || 4;
+  const milestone = new Date(now.getTime() + wks * 7 * 24 * 60 * 60 * 1000);
+
+  localStorage.setItem('routineStartDate', now.toISOString());
+  localStorage.setItem('primaryConcern', concern);
+  localStorage.setItem('milestone', milestone.toISOString());
+
+  showStarted(now, milestone);
+}
+
+function showStarted(start, milestone){
+  const fmt = d => d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('startDate').textContent    = fmt(start);
+  document.getElementById('milestone').textContent    = fmt(milestone);
+  document.getElementById('startedMsg').style.display = 'block';
+  document.getElementById('startBtn').style.display   = 'none';
+}
+
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('routineStartDate');
+  const savedMilestone = localStorage.getItem('milestone');
+  if(saved){
+    showStarted(new Date(saved), savedMilestone ? new Date(savedMilestone) : new Date());
+  }
+});
+</script>
+</body>
+</html>

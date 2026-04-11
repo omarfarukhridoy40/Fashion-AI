@@ -1,0 +1,766 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Body Profile – Fashion AI{% endblock %}
+
+{% block extra_css %}
+<style>
+
+  /* ── Page ── */
+  .profile-page {
+    min-height: calc(100vh - 68px);
+    background: var(--cream);
+    padding: 56px 0 96px;
+    position: relative;
+  }
+
+  .profile-page::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 50% 40% at 90% 5%, rgba(201,169,110,0.09) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 30% at 5% 90%, rgba(139,111,71,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  /* ── Header ── */
+  .profile-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+
+  .profile-header-left {}
+
+  .profile-eyebrow {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    background: rgba(201,169,110,0.1);
+    border: 1px solid rgba(201,169,110,0.25);
+    border-radius: 100px;
+    padding: 5px 14px;
+    margin-bottom: 14px;
+  }
+
+  .profile-header h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .profile-header p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .btn-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: var(--ink);
+    color: var(--white);
+    border-radius: 100px;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.18s;
+    white-space: nowrap;
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-top: 6px;
+  }
+  .btn-edit:hover { background: var(--accent2); transform: translateY(-1px); }
+
+  /* ── Layout ── */
+  .profile-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* ── Sections ── */
+  .detail-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .detail-card {
+    background: var(--white);
+    border: 1px solid var(--stone);
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
+  .detail-card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 22px 28px;
+    border-bottom: 1px solid var(--sand);
+  }
+
+  .card-ico {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: var(--sand);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .card-head-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+  }
+
+  .card-head-sub {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 300;
+    margin-top: 2px;
+  }
+
+  /* ── Data Grid ── */
+  .data-grid {
+    display: grid;
+    padding: 22px 28px;
+    gap: 0;
+  }
+
+  .data-grid-2 { grid-template-columns: 1fr 1fr; }
+  .data-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .data-grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .data-item {
+    padding: 14px 16px 14px 0;
+    border-bottom: 1px solid var(--sand);
+  }
+
+  .data-grid-2 .data-item:nth-last-child(-n+2),
+  .data-grid-3 .data-item:nth-last-child(-n+3),
+  .data-grid-4 .data-item:nth-last-child(-n+4) {
+    border-bottom: none;
+  }
+
+  .data-label {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+
+  .data-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .data-value.empty {
+    color: var(--stone);
+    font-style: italic;
+    font-size: 0.875rem;
+    font-weight: 300;
+  }
+
+  .data-unit {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 300;
+    margin-left: 3px;
+  }
+
+  /* ── Photo Section ── */
+  .photos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 22px 28px;
+  }
+
+  .photo-item {}
+
+  .photo-label {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .photo-box {
+    aspect-ratio: 3/4;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1.5px solid var(--stone);
+    background: var(--sand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .photo-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .photo-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--stone);
+  }
+  .photo-empty-ico { font-size: 2rem; }
+  .photo-empty-txt { font-size: 0.78rem; font-weight: 300; }
+
+  /* ── Palette Section ── */
+  .palette-wrap { padding: 22px 28px; }
+
+  .palette-meta {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .palette-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    background: var(--sand);
+    color: var(--ink);
+    border: 1px solid var(--stone);
+  }
+
+  .palette-section-label {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .color-swatches {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+
+  .swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .swatch-dot {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(0,0,0,0.08);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+
+  .swatch-name {
+    font-size: 0.65rem;
+    color: var(--muted);
+    font-weight: 400;
+    text-align: center;
+    max-width: 48px;
+    line-height: 1.3;
+  }
+
+  /* ── Sidebar ── */
+  .profile-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 84px;
+  }
+
+  .side-card {
+    background: var(--white);
+    border: 1px solid var(--stone);
+    border-radius: 16px;
+    padding: 22px;
+  }
+
+  .side-title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+
+  /* Completion */
+  .completion-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .completion-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .completion-item.done { color: var(--ink); font-weight: 400; }
+
+  .check-circle {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--stone);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem;
+    flex-shrink: 0;
+    color: var(--stone);
+  }
+
+  .completion-item.done .check-circle {
+    background: #f0faf4;
+    border-color: #a8d5b5;
+    color: #1e6b3a;
+  }
+
+  /* Progress bar */
+  .completion-bar-wrap { margin: 14px 0 0; }
+  .completion-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .completion-bar {
+    height: 5px;
+    background: var(--sand);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .completion-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 100px;
+    transition: width 0.8s ease;
+  }
+
+  /* Created at */
+  .side-meta {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+  .side-meta strong { color: var(--ink); font-weight: 500; }
+
+  /* ── Responsive ── */
+  @media (max-width: 1024px) {
+    .profile-layout { grid-template-columns: 1fr; }
+    .profile-sidebar { position: static; }
+  }
+  @media (max-width: 640px) {
+    .data-grid-3, .data-grid-4 { grid-template-columns: 1fr 1fr; }
+    .detail-card-head, .data-grid, .palette-wrap, .photos-grid { padding-left: 18px; padding-right: 18px; }
+  }
+  @media (max-width: 420px) {
+    .data-grid-2, .data-grid-3, .data-grid-4 { grid-template-columns: 1fr; }
+    .data-item { border-bottom: 1px solid var(--sand) !important; }
+    .data-item:last-child { border-bottom: none !important; }
+  }
+
+</style>
+{% endblock %}
+
+
+{% block content %}
+<section class="profile-page">
+  <div class="container">
+
+    <!-- Header -->
+    <div class="profile-header">
+      <div class="profile-header-left">
+        <div class="profile-eyebrow">✦ Your Profile</div>
+        <h1>Body Profile</h1>
+        <p>Your measurements and style data used by the AI for recommendations.</p>
+      </div>
+      <a href="{% url 'update_body_profile' %}" class="btn-edit">✏️ Edit Profile</a>
+    </div>
+
+    <div class="profile-layout">
+      <div class="detail-sections">
+
+        <!-- Skin & Style -->
+        <div class="detail-card">
+          <div class="detail-card-head">
+            <div class="card-ico">🎨</div>
+            <div>
+              <div class="card-head-title">Skin &amp; Style</div>
+              <div class="card-head-sub">Your color and seasonal profile</div>
+            </div>
+          </div>
+          <div class="data-grid data-grid-3">
+            <div class="data-item">
+              <div class="data-label">Skin Type</div>
+              <div class="data-value">{{ profile.skin_type|default:"—"|capfirst }}</div>
+            </div>
+            <div class="data-item">
+              <div class="data-label">Vein Color</div>
+              <div class="data-value">{{ profile.vein_color|default:"—"|capfirst }}</div>
+            </div>
+            <div class="data-item">
+              <div class="data-label">Favourite Season</div>
+              <div class="data-value">{{ profile.favourite_season|default:"—"|capfirst }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Basic Measurements -->
+        <div class="detail-card">
+          <div class="detail-card-head">
+            <div class="card-ico">📏</div>
+            <div>
+              <div class="card-head-title">Basic Measurements</div>
+              <div class="card-head-sub">Height and weight</div>
+            </div>
+          </div>
+          <div class="data-grid data-grid-2">
+            <div class="data-item">
+              <div class="data-label">Height</div>
+              <div class="data-value">
+                {% if profile.height_cm %}{{ profile.height_cm }}<span class="data-unit">cm</span>
+                {% else %}<span class="empty">Not set</span>{% endif %}
+              </div>
+            </div>
+            <div class="data-item">
+              <div class="data-label">Weight</div>
+              <div class="data-value">
+                {% if profile.weight_kg %}{{ profile.weight_kg }}<span class="data-unit">kg</span>
+                {% else %}<span class="empty">Not set</span>{% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Body Measurements -->
+        <div class="detail-card">
+          <div class="detail-card-head">
+            <div class="card-ico">📐</div>
+            <div>
+              <div class="card-head-title">Body Measurements</div>
+              <div class="card-head-sub">All measurements in centimetres</div>
+            </div>
+          </div>
+          <div class="data-grid data-grid-4">
+            <div class="data-item">
+              <div class="data-label">Chest</div>
+              <div class="data-value">
+                {% if profile.chest_cm %}{{ profile.chest_cm }}<span class="data-unit">cm</span>
+                {% else %}<span class="empty">—</span>{% endif %}
+              </div>
+            </div>
+            <div class="data-item">
+              <div class="data-label">Waist</div>
+              <div class="data-value">
+                {% if profile.waist_cm %}{{ profile.waist_cm }}<span class="data-unit">cm</span>
+                {% else %}<span class="empty">—</span>{% endif %}
+              </div>
+            </div>
+            <div class="data-item">
+              <div class="data-label">Hips</div>
+              <div class="data-value">
+                {% if profile.hips_cm %}{{ profile.hips_cm }}<span class="data-unit">cm</span>
+                {% else %}<span class="empty">—</span>{% endif %}
+              </div>
+            </div>
+            <div class="data-item">
+              <div class="data-label">Shoulder</div>
+              <div class="data-value">
+                {% if profile.shoulder_cm %}{{ profile.shoulder_cm }}<span class="data-unit">cm</span>
+                {% else %}<span class="empty">—</span>{% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shape Profile -->
+        <div class="detail-card">
+          <div class="detail-card-head">
+            <div class="card-ico">🧍</div>
+            <div>
+              <div class="card-head-title">Shape Profile</div>
+              <div class="card-head-sub">Body and face shape</div>
+            </div>
+          </div>
+          <div class="data-grid data-grid-2">
+            <div class="data-item">
+              <div class="data-label">Body Shape</div>
+              <div class="data-value">{{ profile.body_shape|default:"—"|capfirst }}</div>
+            </div>
+            <div class="data-item">
+              <div class="data-label">Face Shape</div>
+              <div class="data-value">{{ profile.face_shape|default:"—"|capfirst }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Clothing Sizes -->
+        <div class="detail-card">
+          <div class="detail-card-head">
+            <div class="card-ico">👕</div>
+            <div>
+              <div class="card-head-title">Clothing Sizes</div>
+              <div class="card-head-sub">Your ready-to-wear sizes</div>
+            </div>
+          </div>
+          <div class="data-grid data-grid-3">
+            <div class="data-item">
+              <div class="data-label">Shirt Size</div>
+              <div class="data-value">{{ profile.shirt_size|default:"—"|upper }}</div>
+            </div>
+            <div class="data-item">
+              <div class="data-label">Pants Size</div>
+              <div class="data-value">{{ profile.pants_size|default:"—" }}</div>
+            </div>
+            <div class="data-item">
+              <div class="data-label">Shoe Size</div>
+              <div class="data-value">{{ profile.shoe_size|default:"—" }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Color Palette -->
+        {% if profile.recommended_palette %}
+        <div class="detail-card">
+          <div class="detail-card-head">
+            <div class="card-ico">🌈</div>
+            <div>
+              <div class="card-head-title">Your AI Color Palette</div>
+              <div class="card-head-sub">Auto-generated based on your skin &amp; vein color</div>
+            </div>
+          </div>
+          <div class="palette-wrap">
+
+            <div class="palette-meta">
+              {% if profile.undertone %}
+                <span class="palette-tag">✨ {{ profile.undertone|capfirst }} Undertone</span>
+              {% endif %}
+              {% if profile.vein_color %}
+                <span class="palette-tag">💉 {{ profile.vein_color|capfirst }} Veins</span>
+              {% endif %}
+              {% if profile.favourite_season %}
+                <span class="palette-tag">🌿 {{ profile.favourite_season|capfirst }} Season</span>
+              {% endif %}
+            </div>
+
+            {% with palette=profile.recommended_palette %}
+              {% if palette.neutrals %}
+                <div class="palette-section-label">Neutrals</div>
+                <div class="color-swatches">
+                  {% for color in palette.neutrals %}
+                    <div class="swatch">
+                      <div class="swatch-dot" style="background-color: {{ color.hex }};"></div>
+                      <div class="swatch-name">{{ color.name }}</div>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              {% if palette.colors %}
+                <div class="palette-section-label">Your Colors</div>
+                <div class="color-swatches">
+                  {% for color in palette.colors %}
+                    <div class="swatch">
+                      <div class="swatch-dot" style="background-color: {{ color.hex }};"></div>
+                      <div class="swatch-name">{{ color.name }}</div>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              {% if palette.metals %}
+                <div class="palette-section-label">Metals</div>
+                <div class="color-swatches">
+                  {% for metal in palette.metals %}
+                    <div class="swatch">
+                      <div class="swatch-dot" style="background-color: #c9a96e;"></div>
+                      <div class="swatch-name">{{ metal }}</div>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Photos -->
+        <div class="detail-card">
+          <div class="detail-card-head">
+            <div class="card-ico">📷</div>
+            <div>
+              <div class="card-head-title">AI Photos</div>
+              <div class="card-head-sub">Used only for AI analysis — kept private</div>
+            </div>
+          </div>
+          <div class="photos-grid">
+            <div class="photo-item">
+              <div class="photo-label">Body Photo</div>
+              <div class="photo-box">
+                {% if profile.body_photo %}
+                  <img src="{{ profile.body_photo.url }}" alt="Body photo">
+                {% else %}
+                  <div class="photo-empty">
+                    <div class="photo-empty-ico">🧍</div>
+                    <div class="photo-empty-txt">Not uploaded</div>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+            <div class="photo-item">
+              <div class="photo-label">Face Photo</div>
+              <div class="photo-box">
+                {% if profile.face_photo %}
+                  <img src="{{ profile.face_photo.url }}" alt="Face photo">
+                {% else %}
+                  <div class="photo-empty">
+                    <div class="photo-empty-ico">🤳</div>
+                    <div class="photo-empty-txt">Not uploaded</div>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="profile-sidebar">
+
+        <!-- Completion -->
+        <div class="side-card">
+          <div class="side-title">Profile Completion</div>
+          <div class="completion-list">
+            <div class="completion-item {% if profile.skin_type %}done{% endif %}">
+              <span class="check-circle">{% if profile.skin_type %}✓{% endif %}</span>
+              Skin type
+            </div>
+            <div class="completion-item {% if profile.vein_color %}done{% endif %}">
+              <span class="check-circle">{% if profile.vein_color %}✓{% endif %}</span>
+              Vein color
+            </div>
+            <div class="completion-item {% if profile.favourite_season %}done{% endif %}">
+              <span class="check-circle">{% if profile.favourite_season %}✓{% endif %}</span>
+              Favourite season
+            </div>
+            <div class="completion-item {% if profile.height_cm and profile.weight_kg %}done{% endif %}">
+              <span class="check-circle">{% if profile.height_cm and profile.weight_kg %}✓{% endif %}</span>
+              Height &amp; weight
+            </div>
+            <div class="completion-item {% if profile.chest_cm %}done{% endif %}">
+              <span class="check-circle">{% if profile.chest_cm %}✓{% endif %}</span>
+              Body measurements
+            </div>
+            <div class="completion-item {% if profile.body_shape and profile.face_shape %}done{% endif %}">
+              <span class="check-circle">{% if profile.body_shape and profile.face_shape %}✓{% endif %}</span>
+              Body &amp; face shape
+            </div>
+            <div class="completion-item {% if profile.shirt_size %}done{% endif %}">
+              <span class="check-circle">{% if profile.shirt_size %}✓{% endif %}</span>
+              Clothing sizes
+            </div>
+            <div class="completion-item {% if profile.body_photo and profile.face_photo %}done{% endif %}">
+              <span class="check-circle">{% if profile.body_photo and profile.face_photo %}✓{% endif %}</span>
+              Photos uploaded
+            </div>
+          </div>
+          <div class="completion-bar-wrap">
+            <div class="completion-bar-label">
+              <span>Overall</span>
+              <span>
+                {% with done=0 %}
+                  {% if profile.skin_type %}{% with done=done|add:1 %}{% endwith %}{% endif %}
+                  {{ done }}
+                {% endwith %}
+              </span>
+            </div>
+            <div class="completion-bar">
+              <div class="completion-fill" style="width:
+                {% if profile.skin_type and profile.vein_color and profile.favourite_season and profile.height_cm and profile.weight_kg and profile.chest_cm and profile.body_shape and profile.shirt_size and profile.body_photo and profile.face_photo %}100
+                {% elif profile.skin_type and profile.vein_color and profile.favourite_season and profile.height_cm and profile.weight_kg and profile.chest_cm and profile.body_shape and profile.shirt_size %}80
+                {% elif profile.skin_type and profile.vein_color and profile.height_cm and profile.chest_cm and profile.body_shape %}60
+                {% elif profile.skin_type and profile.height_cm %}40
+                {% elif profile.skin_type %}20
+                {% else %}0{% endif %}%">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile info -->
+        <div class="side-card">
+          <div class="side-title">Profile Info</div>
+          <div class="side-meta">
+            {% if profile.created_at %}
+              <strong>Created</strong><br>
+              {{ profile.created_at|date:"F j, Y" }}<br><br>
+            {% endif %}
+            {% if profile.undertone %}
+              <strong>Undertone</strong><br>
+              {{ profile.undertone|capfirst }}<br><br>
+            {% endif %}
+            <strong>Owner</strong><br>
+            {{ request.user.first_name }} {{ request.user.last_name }}
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="side-card">
+          <div class="side-title">Actions</div>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <a href="{% url 'update_body_profile' %}" class="btn-edit" style="justify-content:center;">✏️ Edit Profile</a>
+            <a href="{% url 'dashboard' %}" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:11px 20px; background:transparent; color:var(--muted); border:1.5px solid var(--stone); border-radius:100px; font-size:0.875rem; font-weight:500; text-decoration:none; transition:all 0.2s;">← Back to Dashboard</a>
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+  </div>
+</section>
+{% endblock %}

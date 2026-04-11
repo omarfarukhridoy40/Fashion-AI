@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirm Your Skin Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1A1210;--rose:#B5614A;--roselt:#F0E0D6;--sage:#5C7A5E;--sagelt:#E8F0E8;
+  --cream:#FAF6F1;--paper:#FFFFFF;--border:#E5DDD5;--muted:#7A6A5E;
+  --warn:#C8820A;--warnlt:#FEF3DC;--shadow:rgba(26,18,16,0.07);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Jost',sans-serif;background:var(--cream);min-height:100vh;padding:32px 24px 80px}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 15% 15%,rgba(181,97,74,0.06),transparent),radial-gradient(ellipse 50% 50% at 85% 85%,rgba(92,122,94,0.05),transparent);pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:640px;margin:0 auto}
+
+.hdr{text-align:center;margin-bottom:36px}
+.hdr-tag{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--rose);font-weight:600;margin-bottom:10px}
+.hdr h1{font-family:'Playfair Display',serif;font-size:28px;color:var(--ink)}
+.hdr p{font-size:14px;color:var(--muted);margin-top:8px;line-height:1.6}
+
+.card{background:var(--paper);border-radius:18px;padding:28px;margin-bottom:14px;border:1px solid var(--border);box-shadow:0 2px 14px var(--shadow);animation:fadeUp .35s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.card:nth-child(2){animation-delay:.06s}.card:nth-child(3){animation-delay:.12s}.card:nth-child(4){animation-delay:.18s}.card:nth-child(5){animation-delay:.24s}.card:nth-child(6){animation-delay:.30s}
+
+.card-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:10px}
+
+/* Skin story */
+.story-card{background:linear-gradient(135deg,var(--ink),#3A2218);border-color:transparent}
+.story-card .card-label{color:rgba(255,255,255,.4)}
+.story-text{font-family:'Playfair Display',serif;font-size:16px;color:rgba(255,255,255,.9);line-height:1.7;font-style:italic}
+
+/* Skin type */
+.type-value{font-family:'Playfair Display',serif;font-size:32px;color:var(--rose);margin-bottom:4px}
+.type-desc{font-size:14px;color:var(--muted);line-height:1.5}
+
+/* States */
+.states-list{display:flex;flex-wrap:wrap;gap:8px}
+.state-tag{background:var(--warnlt);border:1px solid #F0C060;border-radius:20px;padding:6px 14px;font-size:13px;color:var(--warn);font-weight:500}
+.state-reason{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.5;font-style:italic}
+
+/* Concerns */
+.concerns-row{display:flex;flex-wrap:wrap;gap:8px}
+.c-tag{background:var(--roselt);border:1px solid #D4A090;border-radius:20px;padding:7px 15px;font-size:13px;color:var(--rose);font-weight:500}
+
+/* Plain text signals */
+.signal-row{display:flex;flex-wrap:wrap;gap:8px}
+.sig-tag{background:var(--sagelt);border:1px solid #A0C0A2;border-radius:20px;padding:5px 12px;font-size:12px;color:var(--sage);font-weight:500}
+
+/* Issues / corrections */
+.issue-list{list-style:none}
+.issue-list li{font-size:13px;color:var(--warn);padding:6px 0;padding-left:20px;position:relative;border-bottom:1px solid var(--border);line-height:1.5}
+.issue-list li:last-child{border-bottom:none}
+.issue-list li::before{content:'→';position:absolute;left:0;color:var(--warn);font-weight:600}
+.issue-card{background:var(--warnlt);border-color:#F0C060}
+
+/* Reasoning */
+.reason-list{list-style:none}
+.reason-list li{font-size:13px;color:var(--muted);padding:5px 0;padding-left:18px;position:relative;line-height:1.4;border-bottom:1px solid var(--border)}
+.reason-list li:last-child{border-bottom:none}
+.reason-list li::before{content:'·';position:absolute;left:4px;color:var(--rose);font-weight:700;font-size:16px}
+
+/* Agreement */
+.agree-card{background:linear-gradient(135deg,var(--sage),#3D5C3F);border-color:transparent;text-align:center;padding:32px}
+.agree-card .card-label{color:rgba(255,255,255,.4)}
+.agree-title{font-family:'Playfair Display',serif;font-size:20px;color:#fff;margin-bottom:8px}
+.agree-sub{font-size:13px;color:rgba(255,255,255,.65);margin-bottom:24px;line-height:1.6}
+.agree-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-agree{
+  background:linear-gradient(135deg,var(--rose),#9E4F3A);color:#fff;border:none;
+  border-radius:11px;padding:14px 32px;font-family:'Jost',sans-serif;font-size:15px;
+  font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);
+  transition:all .18s ease;
+}
+.btn-agree:hover{transform:translateY(-1px)}
+.btn-correct{
+  background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(255,255,255,.3);
+  border-radius:11px;padding:14px 24px;font-family:'Jost',sans-serif;font-size:14px;
+  font-weight:500;cursor:pointer;transition:all .18s ease;
+}
+.btn-correct:hover{background:rgba(255,255,255,.2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hdr">
+    <div class="hdr-tag">Review Before We Continue</div>
+    <h1>Here's What We Found</h1>
+    <p>Read through what your answers revealed about your skin.<br>Confirm if it sounds right — or go back and correct anything.</p>
+  </div>
+
+  <!-- Skin Story -->
+  <div class="card story-card">
+    <div class="card-label">Your Skin Story</div>
+    <div class="story-text">{{ skin_story }}</div>
+  </div>
+
+  <!-- Skin Type -->
+  <div class="card">
+    <div class="card-label">Detected Skin Type</div>
+    <div class="type-value">{{ skin_type }}</div>
+    <div class="type-desc">
+      {% if skin_type == "Oily" %}Consistent sebum overproduction — throughout the day, beyond the T-zone.
+      {% elif skin_type == "Dry" %}Below-average natural oil production with barrier weakness signals.
+      {% elif skin_type == "Combination" %}T-zone oily, cheeks normal or dry — the most common BD skin type.
+      {% else %}Relatively balanced — rare in Bangladesh's climate.{% endif %}
+    </div>
+  </div>
+
+  <!-- Skin States -->
+  {% if skin_states %}
+  <div class="card">
+    <div class="card-label">Detected Skin States (Overlay Conditions)</div>
+    <div class="states-list">
+      {% for state in skin_states %}
+        <div class="state-tag">⚡ {{ state.state }}</div>
+      {% endfor %}
+    </div>
+    {% for state in skin_states %}
+      <div class="state-reason">{{ state.state }}: {{ state.reason }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Top Concerns -->
+  {% if top_concerns %}
+  <div class="card">
+    <div class="card-label">Detected Top Concerns</div>
+    <div class="concerns-row">
+      {% for c in top_concerns %}
+        <div class="c-tag">{{ c|title|cut:"_" }}</div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Plain Text Signals -->
+  {% if plain_text_signals %}
+  <div class="card">
+    <div class="card-label">Detected from Your Description</div>
+    <div class="signal-row">
+      {% for concern, count in plain_text_signals.items %}
+        <div class="sig-tag">{{ concern|cut:"_" }} ({{ count }} mention{% if count > 1 %}s{% endif %})</div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Issues / Corrections -->
+  {% if issues %}
+  <div class="card issue-card">
+    <div class="card-label">Auto-Corrections & Notes</div>
+    <ul class="issue-list">
+      {% for issue in issues %}
+        <li>{{ issue }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <!-- Reasoning Trace -->
+  {% if reasoning %}
+  <div class="card">
+    <div class="card-label">Why These Results — Signal Trace</div>
+    <ul class="reason-list">
+      {% for r in reasoning %}
+        <li>{{ r }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <!-- Agreement CTA -->
+  <div class="card agree-card">
+    <div class="card-label">Your Decision</div>
+    <div class="agree-title">Does this sound like your skin?</div>
+    <div class="agree-sub">If yes, we'll generate your personalized routine and ingredient plan.<br>If something is off, go back and adjust your answers.</div>
+    <div class="agree-actions">
+      <form method="POST" action="{% url 'confirm_result' %}">
+        {% csrf_token %}
+        <!-- Re-post all original form data -->
+        {% for key, value in request.POST.items %}
+          {% if key != 'csrfmiddlewaretoken' %}
+            <input type="hidden" name="{{ key }}" value="{{ value }}">
+          {% endif %}
+        {% endfor %}
+        <!-- Re-post multi-value concerns -->
+        <input type="hidden" name="confirmed" value="true">
+        <button type="submit" class="btn-agree">Yes — Show My Routine ✦</button>
+      </form>
+      <a href="{% url 'skin_form' %}">
+        <button type="button" class="btn-correct">← Correct Something</button>
+      </a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

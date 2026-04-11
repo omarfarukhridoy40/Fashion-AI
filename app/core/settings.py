@@ -47,7 +47,8 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     # Add local apps here
     'user',
-    "body_profile",
+    'body_profile',
+    'skin',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

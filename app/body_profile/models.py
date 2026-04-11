@@ -56,7 +56,7 @@ VEIN_COLOR_TO_UNDERTONE: Dict[str, str] = {
     VeinColor.MIXED: Undertone.NEUTRAL,
 }
 
-
+# This below code need to be check and understand the purpose. Need to be refactored if necessary.
 UNDERTONE_TO_SUGGESTED_SEASONS: Dict[str, Tuple[str, ...]] = {
     Undertone.WARM: (Favourite_Season.SPRING, Favourite_Season.AUTUMN),
     Undertone.COOL: (Favourite_Season.SUMMER, Favourite_Season.WINTER),
