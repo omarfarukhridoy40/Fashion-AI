@@ -107,7 +107,7 @@ def build_phase2_intro(top_concerns, conflict_detected):
             "dark_circles":       "dark circles",
             "dehydration":        "skin dehydration",
             "aging":              "early aging signs",
-            "barrier_damage_acne":"barrier-damage driven breakouts",
+            "barrier_damage_acne": "barrier-damage driven breakouts",
         }
         readable = []
         for concern in top_concerns:
@@ -141,7 +141,7 @@ def build_phase3_intro(goal_roadmap):
 
     # Count how many goals are blocked vs active
     blocked_goals = [g for g in goal_roadmap if g["is_blocked"]]
-    active_goals  = [g for g in goal_roadmap if not g["is_blocked"]]
+    active_goals = [g for g in goal_roadmap if not g["is_blocked"]]
 
     if len(blocked_goals) == len(goal_roadmap):
         # All goals are blocked
@@ -391,12 +391,12 @@ def build_three_phase_plan(
     if recommendation["mode"] == "phased":
         # Conflict case — Phase 2 from the phased recommendation is already built
         phase2_morning = recommendation["phases"][1]["morning"]
-        phase2_night   = recommendation["phases"][1]["night"]
+        phase2_night = recommendation["phases"][1]["night"]
         phase2_duration = "Weeks 6 to 12"
     else:
         # Standard case — the whole recommendation IS Phase 2
         phase2_morning = recommendation["morning"]
-        phase2_night   = recommendation["night"]
+        phase2_night = recommendation["night"]
         phase2_duration = "Weeks 3 to 12"  # starts earlier for simple cases
 
     # ── Phase 3 duration ──

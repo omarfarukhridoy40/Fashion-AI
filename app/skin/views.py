@@ -35,36 +35,36 @@ def skin_form(request):
 
         # Step 4 — Build the goal roadmap
         goal_roadmap = build_goal_roadmap(
-            selected_goals    = selected_goals,
-            top_concerns      = result["top_concerns"],
-            conflict_detected = result["conflict_detected"],
+            selected_goals=selected_goals,
+            top_concerns=result["top_concerns"],
+            conflict_detected=result["conflict_detected"],
         )
 
         # Step 5 — Get face mask recommendations
         masks = get_mask_recommendations(
-            skin_type    = result["skin_type"],
-            top_concerns = result["top_concerns"],
-            skin_states  = result["skin_states"],
+            skin_type=result["skin_type"],
+            top_concerns=result["top_concerns"],
+            skin_states=result["skin_states"],
         )
 
         # Step 6 — Build the three-phase plan
         has_dehydration = any(s["state"] == "Dehydrated" for s in result["skin_states"])
 
         three_phase_plan = build_three_phase_plan(
-            skin_type         = result["skin_type"],
-            skin_states       = result["skin_states"],
-            top_concerns      = result["top_concerns"],
-            conflict_detected = result["conflict_detected"],
-            recommendation    = result["recommendation"],
-            goal_roadmap      = goal_roadmap,
-            has_dehydration   = has_dehydration,
+            skin_type=result["skin_type"],
+            skin_states=result["skin_states"],
+            top_concerns=result["top_concerns"],
+            conflict_detected=result["conflict_detected"],
+            recommendation=result["recommendation"],
+            goal_roadmap=goal_roadmap,
+            has_dehydration=has_dehydration,
         )
 
         # Step 7 — Attach everything to the result dictionary
-        result["goal_roadmap"]      = goal_roadmap
-        result["masks"]             = masks
-        result["three_phase_plan"]  = three_phase_plan
-        result["selected_goals"]    = selected_goals
+        result["goal_roadmap"] = goal_roadmap
+        result["masks"] = masks
+        result["three_phase_plan"] = three_phase_plan
+        result["selected_goals"] = selected_goals
 
         # Step 8 — Route based on confirmation status
         if not request.POST.get("confirmed"):
@@ -89,33 +89,33 @@ def confirm_result(request):
         selected_goals = request.POST.getlist("skin_goals")
 
         goal_roadmap = build_goal_roadmap(
-            selected_goals    = selected_goals,
-            top_concerns      = result["top_concerns"],
-            conflict_detected = result["conflict_detected"],
+            selected_goals=selected_goals,
+            top_concerns=result["top_concerns"],
+            conflict_detected=result["conflict_detected"],
         )
 
         masks = get_mask_recommendations(
-            skin_type    = result["skin_type"],
-            top_concerns = result["top_concerns"],
-            skin_states  = result["skin_states"],
+            skin_type=result["skin_type"],
+            top_concerns=result["top_concerns"],
+            skin_states=result["skin_states"],
         )
 
         has_dehydration = any(s["state"] == "Dehydrated" for s in result["skin_states"])
 
         three_phase_plan = build_three_phase_plan(
-            skin_type         = result["skin_type"],
-            skin_states       = result["skin_states"],
-            top_concerns      = result["top_concerns"],
-            conflict_detected = result["conflict_detected"],
-            recommendation    = result["recommendation"],
-            goal_roadmap      = goal_roadmap,
-            has_dehydration   = has_dehydration,
+            skin_type=result["skin_type"],
+            skin_states=result["skin_states"],
+            top_concerns=result["top_concerns"],
+            conflict_detected=result["conflict_detected"],
+            recommendation=result["recommendation"],
+            goal_roadmap=goal_roadmap,
+            has_dehydration=has_dehydration,
         )
 
-        result["goal_roadmap"]      = goal_roadmap
-        result["masks"]             = masks
-        result["three_phase_plan"]  = three_phase_plan
-        result["selected_goals"]    = selected_goals
+        result["goal_roadmap"] = goal_roadmap
+        result["masks"] = masks
+        result["three_phase_plan"] = three_phase_plan
+        result["selected_goals"] = selected_goals
 
         return render(request, "skin_profile/result.html", result)
 
