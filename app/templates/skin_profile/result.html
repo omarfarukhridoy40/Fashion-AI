@@ -407,6 +407,174 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   </div>
   {% endif %}
 
+  <!-- ═══ THREE PHASE PLAN ═══ -->
+  {% if three_phase_plan %}
+
+  <!-- Popup warning -->
+  <div style="background:#FFF3CD;border:1.5px solid #FFC107;border-radius:14px;padding:18px 22px;margin-bottom:14px">
+    <div style="font-family:'Playfair Display',serif;font-size:17px;color:#856404;margin-bottom:6px">⚠ Follow the phases in order</div>
+    <div style="font-size:13px;color:#664D03;line-height:1.6">{{ three_phase_plan.popup_warning }}</div>
+  </div>
+
+  <!-- Phase 1 -->
+  <div class="card" style="background:var(--ph1);border-color:#B2D8B5">
+    <div class="card-label" style="color:#1E6B3A">{{ three_phase_plan.phase1.label }}</div>
+    <div style="font-size:12px;font-weight:600;color:#5C7A5E;margin-bottom:10px;background:rgba(255,255,255,.6);display:inline-block;padding:3px 10px;border-radius:10px">{{ three_phase_plan.phase1.duration }}</div>
+    <div style="font-size:14px;color:#1A3D1A;line-height:1.7;margin-bottom:18px;font-style:italic">{{ three_phase_plan.phase1.intro }}</div>
+    <div class="routine-cols">
+      <div>
+        <div class="col-label">☀ Morning</div>
+        <ul class="steps-list">
+          {% for step in three_phase_plan.phase1.morning %}
+          <li class="step-row">
+            <div class="step-num">{{ step.step }}</div>
+            <div class="step-body">
+              <div class="step-type">{{ step.type }}</div>
+              <div class="step-inst">{{ step.instruction }}</div>
+              {% if step.why %}<div class="step-why">{{ step.why }}</div>{% endif %}
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div>
+        <div class="col-label">🌙 Night</div>
+        <ul class="steps-list">
+          {% for step in three_phase_plan.phase1.night %}
+          <li class="step-row">
+            <div class="step-num">{{ step.step }}</div>
+            <div class="step-body">
+              <div class="step-type">{{ step.type }}</div>
+              <div class="step-inst">{{ step.instruction }}</div>
+              {% if step.why %}<div class="step-why">{{ step.why }}</div>{% endif %}
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:14px;padding:12px;background:rgba(255,255,255,.5);border-radius:10px;font-size:13px;color:#2D5A2D;line-height:1.5">
+      <strong>What to expect:</strong> {{ three_phase_plan.phase1.what_to_expect }}
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="card" style="background:var(--ph2);border-color:#90CAE8">
+    <div class="card-label" style="color:#1E5FA0">{{ three_phase_plan.phase2.label }}</div>
+    <div style="font-size:12px;font-weight:600;color:#1E5FA0;margin-bottom:10px;background:rgba(255,255,255,.6);display:inline-block;padding:3px 10px;border-radius:10px">{{ three_phase_plan.phase2.duration }}</div>
+    <div style="font-size:14px;color:#0D2B4A;line-height:1.7;margin-bottom:18px;font-style:italic">{{ three_phase_plan.phase2.intro }}</div>
+    <!-- Sequencing note -->
+    <div style="background:#DBEAFE;border-radius:10px;padding:10px 14px;font-size:13px;color:#1E40AF;line-height:1.5;margin-bottom:16px">
+      📋 {{ three_phase_plan.phase2.sequencing_note }}
+    </div>
+    <div class="routine-cols">
+      <div>
+        <div class="col-label">☀ Morning</div>
+        <ul class="steps-list">
+          {% for step in three_phase_plan.phase2.morning %}
+          <li class="step-row">
+            <div class="step-num">{{ step.step }}</div>
+            <div class="step-body">
+              <div class="step-type">{{ step.type }}</div>
+              <div class="step-inst">{{ step.instruction }}</div>
+              {% if step.why %}<div class="step-why">{{ step.why }}</div>{% endif %}
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div>
+        <div class="col-label">🌙 Night</div>
+        <ul class="steps-list">
+          {% for step in three_phase_plan.phase2.night %}
+          <li class="step-row">
+            <div class="step-num">{{ step.step }}</div>
+            <div class="step-body">
+              <div class="step-type">{{ step.type }}</div>
+              <div class="step-inst">{{ step.instruction }}</div>
+              {% if step.why %}<div class="step-why">{{ step.why }}</div>{% endif %}
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:14px;padding:12px;background:rgba(255,255,255,.5);border-radius:10px;font-size:13px;color:#1E3A5F;line-height:1.5">
+      <strong>What to expect:</strong> {{ three_phase_plan.phase2.what_to_expect }}
+    </div>
+  </div>
+
+  <!-- Phase 3 — Goals -->
+  <div class="card" style="background:var(--ph3);border-color:#C5A8E0">
+    <div class="card-label" style="color:#6B2D8B">{{ three_phase_plan.phase3.label }}</div>
+    <div style="font-size:12px;font-weight:600;color:#6B2D8B;margin-bottom:10px;background:rgba(255,255,255,.6);display:inline-block;padding:3px 10px;border-radius:10px">{{ three_phase_plan.phase3.duration }}</div>
+    <div style="font-size:14px;color:#2D0D4A;line-height:1.7;margin-bottom:18px;font-style:italic">{{ three_phase_plan.phase3.intro }}</div>
+
+    {% if three_phase_plan.phase3.goal_roadmap %}
+      {% for goal_item in three_phase_plan.phase3.goal_roadmap %}
+      <div style="background:rgba(255,255,255,.6);border-radius:12px;padding:16px;margin-bottom:10px;border:1px solid rgba(197,168,224,.4)">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <div style="font-size:13px;font-weight:700;color:#4A1A6B">✦ {{ goal_item.goal_label }}</div>
+          {% if goal_item.is_blocked %}
+          <div style="background:#FEF3E2;border:1px solid #F0C060;border-radius:20px;padding:2px 10px;font-size:11px;color:#856404;font-weight:600">Awaiting Phase 2</div>
+          {% else %}
+          <div style="background:#E8F5EE;border:1px solid #A0C0A2;border-radius:20px;padding:2px 10px;font-size:11px;color:#1E6B3A;font-weight:600">Active in Phase 3</div>
+          {% endif %}
+        </div>
+        {% if goal_item.blocking_reason %}
+        <div style="font-size:13px;color:#856404;line-height:1.5;margin-bottom:8px;background:#FEF9EC;padding:8px 10px;border-radius:8px">{{ goal_item.blocking_reason }}</div>
+        {% endif %}
+        <div style="font-size:13px;color:#3A1A5A;line-height:1.5;margin-bottom:8px">{{ goal_item.roadmap_text }}</div>
+        <div style="font-size:12px;color:#6B2D8B;font-weight:600;margin-bottom:4px">Phase 3 ingredients for this goal:</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          {% for ing in goal_item.phase3_ingredients %}
+          <div style="background:#F4EEF9;border:1px solid #C5A8E0;border-radius:20px;padding:4px 12px;font-size:12px;color:#4A1A6B">{{ ing }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div style="font-size:14px;color:#4A1A6B;line-height:1.6">No goals selected yet. When you are ready to define your skin goals, you can add them to your plan.</div>
+    {% endif %}
+
+    <div style="margin-top:14px;padding:12px;background:rgba(255,255,255,.5);border-radius:10px;font-size:13px;color:#2D0D4A;line-height:1.5">
+      <strong>What to expect:</strong> {{ three_phase_plan.phase3.what_to_expect }}
+    </div>
+  </div>
+
+  {% endif %}
+
+  <!-- ═══ FACE MASKS ═══ -->
+  {% if masks %}
+  <div class="card">
+    <div class="card-label">Weekly Face Masks — Homemade</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5">Use 1 to 2 times per week maximum. Never use on the same day you use strong actives.</div>
+    {% for mask in masks %}
+    <div style="background:var(--cream);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px">
+      <div style="font-family:'Playfair Display',serif;font-size:17px;color:var(--ink);margin-bottom:4px">{{ mask.name }}</div>
+      <div style="font-size:12px;color:var(--rose);font-weight:600;margin-bottom:12px">{{ mask.frequency }} &nbsp;·&nbsp; {{ mask.benefit }}</div>
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:6px">Ingredients</div>
+      <ul style="list-style:none;margin-bottom:12px">
+        {% for ing in mask.ingredients %}
+        <li style="font-size:13px;color:var(--ink);padding:3px 0;padding-left:14px;position:relative">
+          <span style="position:absolute;left:0;color:var(--rose)">·</span>{{ ing }}
+        </li>
+        {% endfor %}
+      </ul>
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:6px">How to Use</div>
+      <ol style="padding-left:18px;margin-bottom:10px">
+        {% for step in mask.how_to_use %}
+        <li style="font-size:13px;color:var(--ink);padding:2px 0;line-height:1.4">{{ step }}</li>
+        {% endfor %}
+      </ol>
+      {% if mask.warning %}
+      <div style="background:var(--warnlt);border:1px solid #F0C060;border-radius:8px;padding:8px 12px;font-size:12px;color:var(--warn)">⚠ {{ mask.warning }}</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
   <!-- ═══ REASONING TRACE ═══ -->
   {% if reasoning %}
   <div class="card">
@@ -418,6 +586,20 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </ul>
   </div>
   {% endif %}
+
+  <!-- ═══ DOWNLOAD BUTTON (UI only — functionality coming in next phase) ═══ -->
+  <div class="card" style="text-align:center;padding:28px 24px;background:linear-gradient(135deg,#EBF3FD,#F0F7FF);border-color:#93C5FD">
+    <div class="card-label" style="color:var(--blue)">Your Personal Report</div>
+    <div style="font-family:'Playfair Display',serif;font-size:18px;color:#1B3A5C;margin-bottom:8px">Download as PDF</div>
+    <div style="font-size:13px;color:#3B82F6;margin-bottom:20px;line-height:1.5">Save your complete skin profile, three-phase plan, mask guide, and goal roadmap as a personal report.</div>
+    <button
+      onclick="alert('PDF export is coming soon. Your report will be available to download in the next update.')"
+      style="background:linear-gradient(135deg,#2478B5,#1B3A5C);color:#fff;border:none;border-radius:12px;padding:13px 30px;font-family:'Jost',sans-serif;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(36,120,181,.3);transition:all .18s ease"
+      onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
+      ↓ Download My Skin Report
+    </button>
+    <div style="font-size:11px;color:#93C5FD;margin-top:10px">PDF export — coming soon</div>
+  </div>
 
   <!-- ═══ START HOOK ═══ -->
   <div class="card start-card">

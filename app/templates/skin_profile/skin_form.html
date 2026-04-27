@@ -334,6 +334,26 @@ body::before{
         </div>
       </div>
 
+      <!-- ═══ STEP 11 — Skin Goals ═══ -->
+      <div class="step" data-step="11" data-required="none">
+        <div class="step-tag">Step 11 — Your Skin Goals <span class="optional">Optional</span></div>
+        <div class="step-q">What do you want your skin to look and feel like?</div>
+        <div class="step-hint">Goals sit in Phase 3 of your plan — after your concerns are treated. Select as many as you want. The plan will show you when and how each goal becomes achievable.</div>
+        <div class="grid-2" id="goalsGrid">
+          {% for goal in goal_choices %}
+          <div class="opt">
+            <input type="checkbox" name="skin_goals" id="goal_{{ goal.key }}" value="{{ goal.key }}">
+            <label for="goal_{{ goal.key }}"><span class="dot"></span>{{ goal.label }}</label>
+          </div>
+          {% endfor %}
+        </div>
+        <div style="margin-top:14px;padding:12px 14px;background:var(--sagelt);border-radius:10px;border:1px solid #A0C0A2">
+          <p style="font-size:12px;color:var(--sage);line-height:1.6">
+            Goals never override skin problems. If a goal requires your concerns to be resolved first, the plan will explain exactly when it becomes active and what needs to happen first.
+          </p>
+        </div>
+      </div>
+
       <div id="errMsg" class="err">Please make a selection to continue.</div>
 
       <div class="nav">
@@ -346,7 +366,7 @@ body::before{
 </div>
 
 <script>
-const TOTAL = 10;
+const TOTAL = 11;
 let cur = 0;
 const steps = document.querySelectorAll('.step');
 
@@ -354,7 +374,7 @@ const stepMeta = [
   {label:'After wash'},   {label:'After hours'},  {label:'Texture'},
   {label:'Concerns'},     {label:'Your words'},   {label:'Sensitivity'},
   {label:'Age group'},    {label:'Routine'},       {label:'Sleep'},
-  {label:'Sun exposure'},
+  {label:'Sun exposure'}, {label:'Your goals'},
 ];
 
 function updateUI(){

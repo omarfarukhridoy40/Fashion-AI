@@ -149,7 +149,7 @@ INGREDIENT_DB = {
 # ───────────────────────────────────────────────────────────────────────────────
 CONCERN_TIMELINES = {
     "acne":               {"weeks": "4-6",   "popup": "Acne usually starts improving in 4-6 weeks. Your skin may look slightly worse in weeks 1-2 — this is normal purging. The active is accelerating cell turnover and pushing congestion to the surface. Do not stop.", "purge_warning": True},
-    "barrier_damage_acne": {"weeks": "6-8",   "popup": "Barrier-damage driven acne responds slower. Focus on barrier repair first — breakouts reduce as the barrier heals. Expect 6-8 weeks.", "purge_warning": False},
+    "barrier_damage_acne":{"weeks": "6-8",   "popup": "Barrier-damage driven acne responds slower. Focus on barrier repair first — breakouts reduce as the barrier heals. Expect 6-8 weeks.", "purge_warning": False},
     "pigmentation":       {"weeks": "8-12",  "popup": "Dark spots are the slowest concern — 8-12 weeks minimum. Daily SPF is non-negotiable. Without SPF, brightening actives cannot work.", "purge_warning": False},
     "dullness":           {"weeks": "2-3",   "popup": "Dullness is the fastest win — most users notice visible glow within 2-3 weeks of consistent routine use.", "purge_warning": False},
     "dryness":            {"weeks": "2-4",   "popup": "Barrier repair takes 2-4 weeks of gentle, consistent care. Introduce no new products during this window.", "purge_warning": False},
@@ -175,7 +175,7 @@ AVOID_MAP = {
     "oiliness":           ["Heavy facial oils", "Thick occlusive creams (shea-heavy)"],
     "pigmentation":       ["Citrus oils on skin (phototoxic)", "Photosensitizing actives without SPF"],
     "dehydration":        ["Alcohol-based toners", "Skipping moisturizer to control oil"],
-    "barrier_damage_acne": ["Benzoyl peroxide (high%)", "Strong exfoliating acids", "SLS cleansers"],
+    "barrier_damage_acne":["Benzoyl peroxide (high%)", "Strong exfoliating acids", "SLS cleansers"],
     "aging":              ["Skipping SPF", "High-fragrance products", "Physical scrubs on mature skin"],
 }
 
@@ -194,7 +194,7 @@ PLAIN_TEXT_KEYWORDS = {
 
 NEXT_GOALS = {
     "acne":               "Once breakouts are controlled (week 4-6), your next goal is fading post-acne dark marks with Alpha Arbutin or Azelaic Acid.",
-    "barrier_damage_acne": "After barrier repair (week 6-8), reassess whether acne persists. Many barrier-damage breakouts resolve on their own.",
+    "barrier_damage_acne":"After barrier repair (week 6-8), reassess whether acne persists. Many barrier-damage breakouts resolve on their own.",
     "pigmentation":       "After 8 weeks of brightening, introduce gentle exfoliation (Lactic Acid 5%) to accelerate cell turnover.",
     "dullness":           "After glow is established (week 3), add antioxidant protection and consider an SPF upgrade.",
     "dryness":            "After barrier is repaired (week 4), gradually introduce Niacinamide — the safest first active.",
@@ -221,9 +221,9 @@ def _get_list(data, key):
 # STEP 0 — INPUT VALIDATION
 # ═══════════════════════════════════════════════════════════════════════════════
 def validate_minimum_data(data):
-    required = ["after_wash", "after_hours"]
+    required    = ["after_wash", "after_hours"]
     recommended = ["pores", "flaky", "reaction", "experience", "sleep", "age_group"]
-    missing_required = [f for f in required if not data.get(f)]
+    missing_required    = [f for f in required if not data.get(f)]
     missing_recommended = [f for f in recommended if not data.get(f)]
     if missing_required:
         return False, missing_required, None, 0
@@ -248,9 +248,9 @@ def validate_minimum_data(data):
 def extract_plain_text_signals(plain_text):
     if not plain_text:
         return {}, []
-    text = plain_text.lower()
+    text     = plain_text.lower()
     detected = {}
-    matched = []
+    matched  = []
     for concern, keywords in PLAIN_TEXT_KEYWORDS.items():
         for kw in keywords:
             if kw in text:
@@ -263,13 +263,13 @@ def extract_plain_text_signals(plain_text):
 # STEP 2 — SKIN STATE DETECTION
 # ═══════════════════════════════════════════════════════════════════════════════
 def detect_skin_states(data, oil_score, dry_score):
-    states = []
-    after_wash = data.get("after_wash", "")
+    states      = []
+    after_wash  = data.get("after_wash", "")
     after_hours = data.get("after_hours", "")
-    reaction = data.get("reaction", "")
-    experience = data.get("experience", "")
-    pores = data.get("pores", "")
-    flaky = data.get("flaky", "")
+    reaction    = data.get("reaction", "")
+    experience  = data.get("experience", "")
+    pores       = data.get("pores", "")
+    flaky       = data.get("flaky", "")
 
     # DEHYDRATED OILY — tight after wash + oily later
     if after_wash == "tight" and after_hours in ["very_oily", "oily_tzone"]:
@@ -335,10 +335,10 @@ def detect_skin_states(data, oil_score, dry_score):
 def calculate_skin_type(data):
     oil = 0
     dry = 0
-    after_wash = data.get("after_wash", "")
+    after_wash  = data.get("after_wash", "")
     after_hours = data.get("after_hours", "")
-    pores = data.get("pores", "")
-    flaky = data.get("flaky", "")
+    pores       = data.get("pores", "")
+    flaky       = data.get("flaky", "")
 
     if after_wash == "tight":
         dry += SIGNAL_WEIGHTS["after_wash"]
@@ -412,20 +412,13 @@ def calculate_skin_type(data):
         return "Dry", oil, dry
 
     # ── FINAL CLASSIFICATION ──────────────────────────────────────────────────
-    if oil >= 4 and dry <= 1:
-        skin_type = "Oily"
-    elif oil >= 5 and dry <= 2:
-        skin_type = "Oily"
-    elif dry >= 4 and oil <= 1:
-        skin_type = "Dry"
-    elif oil >= 2 and dry >= 2:
-        skin_type = "Combination"
-    elif oil >= 3:
-        skin_type = "Oily"
-    elif dry >= 3:
-        skin_type = "Dry"
-    else:
-        skin_type = "Combination"
+    if oil >= 4 and dry <= 1:   skin_type = "Oily"
+    elif oil >= 5 and dry <= 2: skin_type = "Oily"
+    elif dry >= 4 and oil <= 1: skin_type = "Dry"
+    elif oil >= 2 and dry >= 2: skin_type = "Combination"
+    elif oil >= 3:              skin_type = "Oily"
+    elif dry >= 3:              skin_type = "Dry"
+    else:                       skin_type = "Combination"
 
     return skin_type, oil, dry
 
@@ -443,24 +436,19 @@ def calculate_concerns(data, skin_type, skin_states, oil_score, dry_score, plain
 
     # Skin type auto-boost
     if skin_type == "Oily":
-        scores["oiliness"] += 2
-        scores["acne"] += 1
-        scores["comedones"] += 1
+        scores["oiliness"] += 2; scores["acne"] += 1; scores["comedones"] += 1
     elif skin_type == "Dry":
         scores["dryness"] += 2
     elif skin_type == "Combination":
-        scores["oiliness"] += 1
-        scores["dryness"] += 1
+        scores["oiliness"] += 1; scores["dryness"] += 1
 
     # Skin state auto-boost
     if "Dehydrated" in state_names:
-        scores["dehydration"] += 3
-        scores["dullness"] += 1
+        scores["dehydration"] += 3; scores["dullness"] += 1
     if "Sensitized" in state_names or "Compromised Barrier" in state_names:
         scores["sensitivity"] += 3
     if "Congested" in state_names:
-        scores["comedones"] += 2
-        scores["acne"] += 1
+        scores["comedones"] += 2; scores["acne"] += 1
 
     # User-selected concerns
     # Filter out "none" — it means explicitly no concerns, treat same as empty selection
@@ -475,46 +463,34 @@ def calculate_concerns(data, skin_type, skin_states, oil_score, dry_score, plain
         if mapped:
             scores[mapped] += SIGNAL_WEIGHTS["user_select"]
 
-    # Behavioral signals
-    breakouts = data.get("breakouts", "")
-    if breakouts == "sometimes":
-        scores["acne"] += 1
-    elif breakouts == "often":
-        scores["acne"] += 2
-    elif breakouts == "very_frequent":
-        scores["acne"] += 3
+    # # Behavioral signals
+    # breakouts = data.get("breakouts", "")
+    # if breakouts == "sometimes":  scores["acne"] += 1
+    # elif breakouts == "often":    scores["acne"] += 2
+    # elif breakouts == "very_frequent": scores["acne"] += 3
 
     pores = data.get("pores", "")
     if pores in ["visible", "very_visible"]:
-        scores["comedones"] += 1
-        scores["acne"] += 1
+        scores["comedones"] += 1; scores["acne"] += 1
 
     reaction = data.get("reaction", "")
-    if reaction == "burning":
-        scores["sensitivity"] += SIGNAL_WEIGHTS["reaction"]
-    elif reaction == "redness":
-        scores["sensitivity"] += 2
-    elif reaction == "slight":
-        scores["sensitivity"] += 1
+    if reaction == "burning":   scores["sensitivity"] += SIGNAL_WEIGHTS["reaction"]
+    elif reaction == "redness": scores["sensitivity"] += 2
+    elif reaction == "slight":  scores["sensitivity"] += 1
 
     sleep = data.get("sleep", "")
     if sleep == "<5":
-        scores["dullness"] += 2
-        scores["dark_circles"] += 1
+        scores["dullness"] += 2; scores["dark_circles"] += 1
     elif sleep == "5-6":
-        scores["dullness"] += 1
-        scores["dark_circles"] += 1
+        scores["dullness"] += 1; scores["dark_circles"] += 1
 
     flaky = data.get("flaky", "")
-    if flaky == "yes_often":
-        scores["dryness"] += SIGNAL_WEIGHTS["flaky"]
-    elif flaky == "sometimes":
-        scores["dryness"] += 1
+    if flaky == "yes_often":    scores["dryness"] += SIGNAL_WEIGHTS["flaky"]
+    elif flaky == "sometimes":  scores["dryness"] += 1
 
     sun = data.get("sun_exposure", "")
     if sun == "high_sun":
-        scores["pigmentation"] += 2
-        scores["dullness"] += 1
+        scores["pigmentation"] += 2; scores["dullness"] += 1
     elif sun == "medium_sun":
         scores["pigmentation"] += 1
 
@@ -525,12 +501,9 @@ def calculate_concerns(data, skin_type, skin_states, oil_score, dry_score, plain
 
     # Age-gated
     if age_group == "adult_28_35":
-        scores["aging"] += SIGNAL_WEIGHTS["age_signal"]
-        scores["pigmentation"] += 1
+        scores["aging"] += SIGNAL_WEIGHTS["age_signal"]; scores["pigmentation"] += 1
     elif age_group == "adult_35_plus":
-        scores["aging"] += SIGNAL_WEIGHTS["age_signal"] + 2
-        scores["pigmentation"] += 2
-        scores["dullness"] += 1
+        scores["aging"] += SIGNAL_WEIGHTS["age_signal"] + 2; scores["pigmentation"] += 2; scores["dullness"] += 1
 
     # Barrier damage acne: acne without oil
     if scores["acne"] >= 2 and oil_score <= 1 and dry_score >= 2:
@@ -544,7 +517,7 @@ def calculate_concerns(data, skin_type, skin_states, oil_score, dry_score, plain
 # STEP 5 — CONCERN VALIDATION
 # ═══════════════════════════════════════════════════════════════════════════════
 def validate_concerns(data, scores, skin_type, oil_score, dry_score):
-    notes = []
+    notes    = []
     adjusted = dict(scores)
     selected = [c for c in _get_list(data, "concerns") if c != "none"]
     reaction = data.get("reaction", "")
@@ -575,7 +548,7 @@ def validate_concerns(data, scores, skin_type, oil_score, dry_score):
 # ═══════════════════════════════════════════════════════════════════════════════
 def get_top_concerns(scores):
     sorted_items = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-    filtered = [item for item in sorted_items if item[1] >= 2]
+    filtered     = [item for item in sorted_items if item[1] >= 2]
     return [item[0] for item in filtered[:3]]
 
 
@@ -595,8 +568,8 @@ def detect_conflict(top_concerns):
 def attribute_dullness_cause(data, scores, skin_states):
     if scores.get("dullness", 0) < 2:
         return []
-    sleep = data.get("sleep", "")
-    sun = data.get("sun_exposure", "medium_sun")
+    sleep  = data.get("sleep", "")
+    sun    = data.get("sun_exposure", "medium_sun")
     states = [s["state"] for s in skin_states]
     causes = []
 
@@ -618,19 +591,17 @@ def attribute_dullness_cause(data, scores, skin_states):
 # STEP 9 — RECOMMENDATION ENGINE
 # ═══════════════════════════════════════════════════════════════════════════════
 def get_recommendation(data, skin_type, skin_states, top_concerns, conflict_detected, dullness_causes, age_group):
-    experience = data.get("experience", "basic")
-    is_beginner = experience in ["none", "basic"]
+    experience      = data.get("experience", "basic")
+    is_beginner     = experience in ["none", "basic"]
     has_sensitivity = "sensitivity" in top_concerns
-    has_dryness = "dryness" in top_concerns
+    has_dryness     = "dryness" in top_concerns
     has_dehydration = any(s["state"] == "Dehydrated" for s in skin_states)
     has_barrier_dmg = "barrier_damage_acne" in top_concerns
 
     if conflict_detected:
         return _build_phased_routine(top_concerns, has_sensitivity, has_dryness, has_dehydration)
-    return _build_standard_routine(
-        data, skin_type, skin_states, top_concerns, is_beginner,
-        has_sensitivity, has_dehydration, has_barrier_dmg, dullness_causes, age_group,
-    )
+    return _build_standard_routine(data, skin_type, skin_states, top_concerns, is_beginner,
+                                   has_sensitivity, has_dehydration, has_barrier_dmg, dullness_causes, age_group)
 
 
 def _build_phased_routine(top_concerns, has_sensitivity, has_dryness, has_dehydration):
@@ -672,16 +643,27 @@ def _build_phased_routine(top_concerns, has_sensitivity, has_dryness, has_dehydr
 
     # Build deferred concern notes — shown in phased routine notes section
     deferred_notes = []
-    if "excess_oil" in top_concerns:
+    if "excess_oil" in top_concerns or "oiliness" in top_concerns:
         deferred_notes.append("You selected excess oil — Niacinamide in Phase 2 regulates sebum while being gentle enough for your reactive skin. Oil improvement expected from week 6-8.")
     if "dark_circles" in top_concerns:
         deferred_notes.append("Dark circles: Caffeine eye cream is included from Phase 1 — it is safe at all stages. For deeper treatment, a brighter eye serum is added after Phase 3.")
-    if "oiliness" in top_concerns:
-        deferred_notes.append("Oiliness is addressed by Niacinamide in Phase 2 — sebum regulation improves alongside barrier repair.")
+    # if "oiliness" in top_concerns:
+    #     deferred_notes.append("Oiliness is addressed by Niacinamide in Phase 2 — sebum regulation improves alongside barrier repair.")
+
+    # Bug 1 FIX — comedones + oiliness in phased route:
+    # Comedones are caused by sebum not clearing from pores. Without oil regulation in Phase 2,
+    # any congestion cleared in Phase 1 will immediately refill. Niacinamide is already in Phase 2
+    # but the user needs to know explicitly that it addresses their comedone and oil concerns.
+    if "comedones" in top_concerns or ("oiliness" in top_concerns and "comedones" in top_concerns):
+        deferred_notes.append(
+            "Comedones and oiliness: Niacinamide in Phase 2 directly regulates sebum production and reduces pore congestion. "
+            "Treating comedones without first stabilizing oil production causes them to refill immediately — "
+            "Phase 1 barrier repair prevents this cycle. Phase 2 Niacinamide is the correct first active for your profile."
+        )
 
     # Bug 6b framing note — none selected but phased routine triggered by reaction=burning
     none_note = []
-    if "none" in top_concerns or not any(c in top_concerns for c in ["acne", "pigmentation", "dullness", "dryness", "sensitivity", "oiliness", "dark_circles", "comedones", "aging"]):
+    if "none" in top_concerns or not any(c in top_concerns for c in ["acne","pigmentation","dullness","dryness","sensitivity","oiliness","dark_circles","comedones","aging"]):
         none_note = ["You indicated no specific concerns — however, your skin's reactivity required a phased approach for medical reasons. Azelaic Acid in Phase 3 is included for skin stability, not because of a concern you selected."]
 
     phases = [
@@ -699,11 +681,15 @@ def _build_phased_routine(top_concerns, has_sensitivity, has_dryness, has_dehydr
         },
         {
             "number": 2, "label": "Phase 2 - First Active", "duration": "Weeks 6-12",
-            "focus": "Introduce Niacinamide — addresses acne, pigmentation, oiliness, dullness and barrier simultaneously.",
+            "focus": (
+                "Introduce Niacinamide — regulates sebum, clears pore congestion, addresses comedones and oiliness, and bridges barrier repair."
+                if any(c in top_concerns for c in ["comedones", "oiliness"])
+                else "Introduce Niacinamide — addresses acne, pigmentation, oiliness, dullness and barrier simultaneously."
+            ),
             "morning": inject_caffeine(phase2_morning_base),
             "night": [
                 {"step": 1, "type": "Cleanser",    "instruction": "Gentle cleanser", "why": ""},
-                {"step": 2, "type": "Serum",       "instruction": "Niacinamide 5%", "why": "Evening application"},
+                {"step": 2, "type": "Serum",       "instruction": "Niacinamide 5%", "why": "Evening application — sebum regulation, pore clearing, and barrier support"},
                 {"step": 3, "type": "Moisturizer", "instruction": "Ceramide moisturizer", "why": ""},
             ],
             "hero_ingredients": ["Niacinamide 5%"],
@@ -735,10 +721,8 @@ def _build_phased_routine(top_concerns, has_sensitivity, has_dryness, has_dehydr
     }
 
 
-def _build_standard_routine(
-    data, skin_type, skin_states, top_concerns, is_beginner,
-    has_sensitivity, has_dehydration, has_barrier_dmg, dullness_causes, age_group,
-):
+def _build_standard_routine(data, skin_type, skin_states, top_concerns, is_beginner,
+                              has_sensitivity, has_dehydration, has_barrier_dmg, dullness_causes, age_group):
     state_names = [s["state"] for s in skin_states]
 
     # Cleanser
@@ -768,14 +752,14 @@ def _build_standard_routine(
         moist_pm = "Slightly richer moisturizer at night"
 
     morning_s = []
-    night_s = []
-    used = []
+    night_s   = []
+    used      = []
 
     # Flags used throughout the routine builder
-    reaction = data.get("reaction", "")
+    reaction      = data.get("reaction", "")
     reaction_safe = reaction not in ["burning", "redness"]   # Bug 1a gate — covers SA + Retinol
     none_selected = "none" in _get_list(data, "concerns")    # Bug 6a gate — prevention mode
-    selected_raw = [c for c in _get_list(data, "concerns") if c != "none"]
+    selected_raw  = [c for c in _get_list(data, "concerns") if c != "none"]
 
     # Dehydration — always first
     if has_dehydration:
@@ -800,44 +784,70 @@ def _build_standard_routine(
             _add(night_s, "Niacinamide 5% serum — oil control, anti-inflammatory, and brightening", "niacinamide")
             used.append("niacinamide")
             if not is_beginner and reaction_safe and not none_selected:
-                # Bug 1a: blocked when reaction=redness or burning
-                # Bug 6a: blocked when none selected (prevention mode only)
                 sa_strength = "0.5-1%" if data.get("experience") == "intermediate" else "1-2%"
                 _add(night_s, f"Salicylic Acid {sa_strength} toner — pore clearing, alternate nights if sensitive", "salicylic_acid")
                 used.append("salicylic_acid")
+
+        # Bug 2 FIX — comedones always needs Niacinamide.
+        # Comedones are caused by sebum not clearing from pores. Without oil regulation,
+        # pores refill immediately after any treatment. Niacinamide regulates sebum AND
+        # reduces pore appearance. It is the foundation ingredient for comedone treatment.
+        # Previously only added when acne was in top concerns — that left pure comedone
+        # users with no oil-control ingredient at all.
+        if "comedones" in top_concerns and "niacinamide" not in used:
+            _add(night_s, "Niacinamide 5% serum — pore regulation and sebum control (essential for comedones)", "niacinamide")
+            used.append("niacinamide")
+            # If not beginner, add SA for active pore clearing
+            if not is_beginner and reaction_safe and not none_selected:
+                sa_strength = "0.5-1%" if data.get("experience") == "intermediate" else "1-2%"
+                _add(night_s, f"Salicylic Acid {sa_strength} toner — dissolves sebum plugs in pores", "salicylic_acid")
+                used.append("salicylic_acid")
+
         if has_barrier_dmg:
             _add(night_s, "Azelaic Acid 10% — barrier-driven acne without harsh actives", "azelaic_acid")
             used.append("azelaic_acid")
-        if "oiliness" in top_concerns and "acne" not in top_concerns:
+
+        # Oiliness only (no acne, no comedones) — Zinc PCA for sebum regulation
+        if "oiliness" in top_concerns and "acne" not in top_concerns and "comedones" not in top_concerns:
             _add(morning_s, "Zinc PCA serum — regulates sebum without drying", "zinc_pca")
             used.append("zinc_pca")
+
         if "dullness" in top_concerns:
             dc = dullness_causes[0]["cause"] if dullness_causes else "general"
-            vitamin_c_safe = reaction_safe  # Bug 1a: same gate covers Vitamin C
+            vitamin_c_safe = reaction_safe
             if dc == "sun_damage" and not is_beginner and vitamin_c_safe:
                 _add(morning_s, "Vitamin C 10% serum — antioxidant brightening (morning + SPF always)", "vitamin_c")
                 used.append("vitamin_c")
             elif "niacinamide" not in used:
                 _add(morning_s, "Niacinamide 5% — brightening, sebum regulation, and barrier support", "niacinamide")
                 used.append("niacinamide")
+
         if "pigmentation" in top_concerns:
+            # Bug 2 FIX — pigmentation + comedones: Niacinamide must already be present
+            # from the comedones block above. If it is, the pigmentation block adds the
+            # brightening layer on top. If comedones is not in top concerns but pigmentation
+            # is alongside other oily concerns, Niacinamide still covers both.
+            # Add brightening ingredient as the second layer, not the only layer.
             if not is_beginner:
                 _add(morning_s, "Tranexamic Acid 3-5% — melanin inhibition (highly effective for BD skin tones)", "tranexamic_acid")
                 used.append("tranexamic_acid")
             else:
                 _add(night_s, "Alpha Arbutin 2% — gentle dark spot reduction for beginners", "alpha_arbutin")
                 used.append("alpha_arbutin")
+            # If Niacinamide not yet added (pigmentation only, no comedones/acne/oiliness),
+            # add it now — it contributes meaningfully to pigmentation treatment too.
+            if "niacinamide" not in used:
+                _add(morning_s, "Niacinamide 5% — fades pigmentation and regulates sebum simultaneously", "niacinamide")
+                used.append("niacinamide")
+
         if "aging" in top_concerns and age_group in ["adult_28_35", "adult_35_plus"]:
             if is_beginner:
                 _add(night_s, "Peptide serum — gentle collagen support", "peptides")
                 used.append("peptides")
             elif reaction_safe and not none_selected:
-                # Bug 1a: Retinol blocked for reaction=redness (User 303, 316)
-                # Bug 6a: Retinol is a treatment active — not for prevention mode
                 _add(night_s, "Retinol 0.025% — start 2x/week, increase gradually. Never daytime.", "retinol")
                 used.append("retinol")
             else:
-                # Reaction=redness or none selected — use Peptides as safe alternative
                 _add(night_s, "Peptide serum — collagen support safe for your reactive skin", "peptides")
                 used.append("peptides")
 
@@ -866,8 +876,8 @@ def _build_standard_routine(
 
     # FIX Bug 4: note when routine is derived from behavioral signals without concern selection
     selected_concerns = [c for c in _get_list(data, "concerns") if c != "none"]
-    explicitly_none = "none" in _get_list(data, "concerns")
-    behavioral_note = []
+    explicitly_none   = "none" in _get_list(data, "concerns")
+    behavioral_note   = []
     if not selected_concerns and top_concerns:
         if explicitly_none:
             behavioral_note = ["You indicated no specific concerns — this routine focuses on prevention, protection, and maintaining your skin's current health."]
@@ -894,12 +904,11 @@ def _add(lst, instruction, ingredient_key):
 
 def _build_avoid_list(top_concerns):
     avoid = []
-    seen = set()
+    seen  = set()
     for concern in top_concerns:
         for item in AVOID_MAP.get(concern, []):
             if item not in seen:
-                avoid.append(item)
-                seen.add(item)
+                avoid.append(item); seen.add(item)
     return avoid
 
 
@@ -907,7 +916,7 @@ def _build_avoid_list(top_concerns):
 # STEP 10 — SKIN STORY
 # ═══════════════════════════════════════════════════════════════════════════════
 def build_skin_story(skin_type, skin_states, top_concerns, oil_score, dry_score, data):
-    parts = []
+    parts  = []
     states = [s["state"] for s in skin_states]
 
     if skin_type == "Oily" and "Dehydrated" in states:
@@ -952,9 +961,9 @@ def build_skin_story(skin_type, skin_states, top_concerns, oil_score, dry_score,
 # STEP 11 — CONSISTENCY CHECK
 # ═══════════════════════════════════════════════════════════════════════════════
 def check_consistency(data, skin_type, scores, skin_states, validation_notes):
-    issues = list(validation_notes)
+    issues      = list(validation_notes)
     state_names = [s["state"] for s in skin_states]
-    after_wash = data.get("after_wash", "")
+    after_wash  = data.get("after_wash", "")
     after_hours = data.get("after_hours", "")
 
     if skin_type == "Dry" and scores.get("oiliness", 0) >= 2:
@@ -998,12 +1007,12 @@ def get_next_goal(top_concerns, conflict_detected):
 # STEP 13 — REASONING TRACE
 # ═══════════════════════════════════════════════════════════════════════════════
 def _build_reasoning_trace(data, skin_type, skin_states, scores, top_concerns, matched_keywords):
-    reasons = []
+    reasons     = []
     after_hours = data.get("after_hours", "")
-    after_wash = data.get("after_wash", "")
-    pores = data.get("pores", "")
-    sleep = data.get("sleep", "")
-    reaction = data.get("reaction", "")
+    after_wash  = data.get("after_wash", "")
+    pores       = data.get("pores", "")
+    sleep       = data.get("sleep", "")
+    reaction    = data.get("reaction", "")
 
     if after_hours == "very_oily":
         reasons.append("Skin is very oily 3 hours after washing — strong oily signal (weight: 3)")
@@ -1049,7 +1058,7 @@ def run_skin_engine(data):
 
     skin_type, oil_score, dry_score = calculate_skin_type(data)
     skin_states = detect_skin_states(data, oil_score, dry_score)
-    age_group = data.get("age_group", "adult_25_35")
+    age_group   = data.get("age_group", "adult_25_35")
 
     scores = calculate_concerns(data, skin_type, skin_states, oil_score, dry_score, plain_text_signals, age_group)
     scores, validation_notes = validate_concerns(data, scores, skin_type, oil_score, dry_score)
@@ -1057,14 +1066,13 @@ def run_skin_engine(data):
     conflict_detected, conflict_pair = detect_conflict(top_concerns)
     dullness_causes = attribute_dullness_cause(data, scores, skin_states)
 
-    recommendation = get_recommendation(
-        data, skin_type, skin_states, top_concerns, conflict_detected, dullness_causes, age_group,
-    )
-    skin_story = build_skin_story(skin_type, skin_states, top_concerns, oil_score, dry_score, data)
-    timeline = get_timeline(top_concerns, conflict_detected)
-    next_goal = get_next_goal(top_concerns, conflict_detected)
-    issues = check_consistency(data, skin_type, scores, skin_states, validation_notes)
-    reasoning = _build_reasoning_trace(data, skin_type, skin_states, scores, top_concerns, matched_keywords)
+    recommendation = get_recommendation(data, skin_type, skin_states, top_concerns,
+                                         conflict_detected, dullness_causes, age_group)
+    skin_story  = build_skin_story(skin_type, skin_states, top_concerns, oil_score, dry_score, data)
+    timeline    = get_timeline(top_concerns, conflict_detected)
+    next_goal   = get_next_goal(top_concerns, conflict_detected)
+    issues      = check_consistency(data, skin_type, scores, skin_states, validation_notes)
+    reasoning   = _build_reasoning_trace(data, skin_type, skin_states, scores, top_concerns, matched_keywords)
 
     return {
         "error":              False,
