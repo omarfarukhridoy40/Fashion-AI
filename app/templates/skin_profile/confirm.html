@@ -92,6 +92,24 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <p>Read through what your answers revealed about your skin.<br>Confirm if it sounds right — or go back and correct anything.</p>
   </div>
 
+  <!-- Issue 6: Reduced confidence warning — shown when 3+ recommended fields were skipped.
+       confidence_penalty is 5 per missing field, so show_confidence_warning is True at >= 15.
+       The banner tells the user their result may be less precise without being alarming. -->
+  {% if show_confidence_warning %}
+  <div style="background:#FEF3E2;border:1.5px solid #F0C060;border-radius:14px;padding:16px 20px;margin-bottom:14px">
+    <div style="font-family:'Jost',sans-serif;font-weight:600;color:#856404;margin-bottom:5px;font-size:14px">⚠ Reduced confidence result</div>
+    <div style="font-size:13px;color:#664D03;line-height:1.6">You skipped several questions. This analysis is based on incomplete data and may be less precise than usual. Go back and answer all questions for a more accurate routine.</div>
+  </div>
+  {% endif %}
+
+  <!-- Issue 6: Reduced confidence banner — shown when 3+ recommended fields were skipped -->
+  {% if show_confidence_warning %}
+  <div style="background:#FEF3E2;border:1.5px solid #F0C060;border-radius:14px;padding:16px 20px;margin-bottom:14px;animation:fadeUp .3s ease both">
+    <div style="font-family:'Jost',sans-serif;font-weight:600;color:#856404;font-size:14px;margin-bottom:6px">⚠ Reduced confidence — incomplete answers</div>
+    <div style="font-size:13px;color:#664D03;line-height:1.6">You skipped several questions. This analysis is based on limited information and may be less precise than usual. Go back and answer all questions for a more accurate routine.</div>
+  </div>
+  {% endif %}
+
   <!-- Skin Story -->
   <div class="card story-card">
     <div class="card-label">Your Skin Story</div>

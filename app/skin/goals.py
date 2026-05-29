@@ -24,135 +24,27 @@
 #                            even in Phase 1 or 2
 # ───────────────────────────────────────────────────────────────────────────────
 
-GOALS_DB = {
 
-    "glow": {
-        "label": "Natural Glow",
-        "key": "glow",
-        "requires_stable": ["sensitivity", "barrier_damage_acne"],
-        "phase3_ingredients": ["Vitamin C 10%", "Niacinamide 5%", "AHA exfoliant (Lactic Acid 5%)"],
-        "roadmap_text": (
-            "A natural glow comes from good hydration, regular gentle exfoliation, and antioxidant protection. "
-            "Your routine already starts building this from Phase 1 with barrier repair and hydration. "
-            "In Phase 3, Vitamin C and gentle exfoliation are added to amplify the glow effect."
-        ),
-        "naturally_supported_by": ["dullness", "dehydration"],
-    },
-
-    "glass_skin": {
-        "label": "Glass Skin",
-        "key": "glass_skin",
-        "requires_stable": ["acne", "sensitivity", "barrier_damage_acne", "comedones"],
-        "phase3_ingredients": [
-            "Hyaluronic Acid (multi-layered)",
-            "Snail Mucin or Centella serum",
-            "Light sealing facial oil (Squalane)",
-        ],
-        "roadmap_text": (
-            "Glass skin is the result of deep, consistent hydration and a completely intact skin barrier. "
-            "It cannot be achieved over active acne or a compromised barrier — the surface texture will not be clear. "
-            "Phase 1 and 2 build the barrier and clear congestion. "
-            "Phase 3 introduces layered hydration and a sealing oil that creates the glass-like finish."
-        ),
-        "naturally_supported_by": ["dehydration", "dryness", "sensitivity"],
-    },
-
-    "pore_minimizing": {
-        "label": "Smaller-Looking Pores",
-        "key": "pore_minimizing",
-        "requires_stable": ["acne"],
-        "phase3_ingredients": ["Niacinamide 5-10%", "Salicylic Acid 0.5-1% (maintenance)"],
-        "roadmap_text": (
-            "Pore size is largely genetic but pores appear smaller when they are not congested with sebum. "
-            "Niacinamide in Phase 2 already starts this process by regulating oil and reducing pore appearance. "
-            "Phase 3 maintains this with a lower-dose BHA toner used twice a week as upkeep."
-        ),
-        "naturally_supported_by": ["oiliness", "comedones", "acne"],
-    },
-
-    "even_tone": {
-        "label": "Even Skin Tone",
-        "key": "even_tone",
-        "requires_stable": ["sensitivity", "barrier_damage_acne"],
-        "phase3_ingredients": ["Tranexamic Acid 3-5%", "Alpha Arbutin 2%", "Vitamin C 10%"],
-        "roadmap_text": (
-            "Even tone requires reducing melanin overproduction and clearing existing dark marks. "
-            "SPF every morning is the most important step — without it, brightening ingredients cannot work. "
-            "The brightening actives introduced in Phase 2 (for pigmentation concern) already serve this goal. "
-            "Phase 3 can combine two brightening agents if the skin tolerates it."
-        ),
-        "naturally_supported_by": ["pigmentation", "dullness"],
-    },
-
-    "anti_aging": {
-        "label": "Anti-Aging Prevention",
-        "key": "anti_aging",
-        "requires_stable": ["sensitivity"],
-        "phase3_ingredients": ["Retinol 0.025% (start slow)", "Peptides", "Vitamin C 10%"],
-        "roadmap_text": (
-            "The best anti-aging step is SPF every single morning — this is already in your Phase 1 routine. "
-            "In Phase 3, Retinol is introduced if your skin is stable and tolerating actives. "
-            "Start at the lowest concentration (0.025%) twice a week and increase every 3 months. "
-            "Peptides can be added alongside Retinol for collagen support."
-        ),
-        "naturally_supported_by": ["aging", "dullness", "pigmentation"],
-    },
-
-    "hydration_plump": {
-        "label": "Plump and Hydrated Look",
-        "key": "hydration_plump",
-        "requires_stable": [],
-        "phase3_ingredients": ["Hyaluronic Acid", "Glycerin", "Ceramides", "Squalane (PM)"],
-        "roadmap_text": (
-            "Plump hydrated skin starts in Phase 1 — the entire barrier repair phase is building this foundation. "
-            "This goal has no blocking concerns. "
-            "Phase 3 adds a sealing facial oil at night to lock hydration in and amplify the plump effect."
-        ),
-        "naturally_supported_by": ["dryness", "dehydration"],
-    },
-
-    "acne_scar_fade": {
-        "label": "Fade Acne Scars and Marks",
-        "key": "acne_scar_fade",
-        "requires_stable": ["acne", "barrier_damage_acne"],
-        "phase3_ingredients": ["Azelaic Acid 10%", "Alpha Arbutin 2%", "Niacinamide 5%"],
-        "roadmap_text": (
-            "Acne marks (post-inflammatory hyperpigmentation) fade naturally over time but can be accelerated. "
-            "You cannot fade marks while new breakouts are still forming — the source must be controlled first. "
-            "Phase 2 clears active acne. Phase 3 then targets the remaining marks with brightening actives."
-        ),
-        "naturally_supported_by": ["acne", "pigmentation"],
-    },
-
-    "oil_control": {
-        "label": "Control Oiliness Throughout the Day",
-        "key": "oil_control",
-        "requires_stable": ["sensitivity"],
-        "phase3_ingredients": ["Zinc PCA", "Niacinamide 10%", "Oil-free moisturizer with mattifying finish"],
-        "roadmap_text": (
-            "Long-term oil control is a result of consistent sebum regulation — not stripping the skin. "
-            "Niacinamide in Phase 2 already begins this work. "
-            "Phase 3 can introduce Zinc PCA alongside Niacinamide for stronger sebum regulation."
-        ),
-        "naturally_supported_by": ["oiliness", "acne", "comedones"],
-    },
-}
-
-
-# ───────────────────────────────────────────────────────────────────────────────
-# GOAL ROADMAP GENERATOR
+# =============================================================================
+# GOALS DATABASE — now loaded from PostgreSQL via db_access.py
 #
-# Takes the user's selected goals and their top_concerns.
-# Returns a list of goal roadmap items.
-# Each item tells the user:
-#   - their goal
-#   - whether it is blocked by a current concern
-#   - if blocked — what needs to happen first and when
-#   - if not blocked — how Phase 3 delivers it
-#   - which Phase 2 ingredients already move toward this goal
-# ───────────────────────────────────────────────────────────────────────────────
+# All goal records including Phase 3 ingredients are stored in the database.
+# Admin panel: /admin/skin_profile/skingoal/
+#
+# The functions below load from database each call.
+# Data is cached by db_access.py for 1 hour.
+import logging
+
+from .db_access import get_goals_db
+
+
+logger = logging.getLogger(__name__)
+
 
 def build_goal_roadmap(selected_goals, top_concerns, conflict_detected):
+
+    # Load goals from database (cached — fast after first load)
+    GOALS_DB = get_goals_db()
 
     # If no goals selected, return empty list
     # The result page simply does not show the goals section
@@ -163,8 +55,12 @@ def build_goal_roadmap(selected_goals, top_concerns, conflict_detected):
 
     for goal_key in selected_goals:
 
-        # Skip if this goal is not in our database
+        # Skip if this goal is not in our database.
+        # Log a warning so we have visibility in production if someone
+        # submits an invalid goal key via a crafted POST request, or if
+        # a new form option was added without updating goals.py / the DB.
         if goal_key not in GOALS_DB:
+            logger.warning(f"Unknown skin_goal key received and skipped: {goal_key!r}")
             continue
 
         goal = GOALS_DB[goal_key]
@@ -242,6 +138,11 @@ def build_goal_roadmap(selected_goals, top_concerns, conflict_detected):
 # ───────────────────────────────────────────────────────────────────────────────
 
 def get_goal_choices():
+    """
+    Returns a list of (key, label) pairs for rendering the goals form step.
+    Loaded from database so admin can add/remove goals without code changes.
+    """
+    GOALS_DB = get_goals_db()
     choices = []
     for key, goal in GOALS_DB.items():
         choices.append({

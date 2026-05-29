@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# routine.py — Three-Phase Skincare Plan Builder
+# phases.py — Three-Phase Skincare Plan Builder
 #
 # Every user gets a three-phase plan.
 # No exceptions — even simple cases follow the same structure.
@@ -364,7 +364,10 @@ def build_three_phase_plan(
         phase1_intro_key = "has_conflict"
     elif "Sensitized" in state_names or "Compromised Barrier" in state_names:
         phase1_intro_key = "has_sensitivity"
-    elif has_dehydration:
+    elif has_dehydration or "Mild Dehydration Tendency" in state_names:
+        # Issue 10 fix: Mild Dehydration Tendency was added to logic.py as a gap fix
+        # but phases.py was never updated to handle it. These users need the hydration
+        # messaging, not the generic default intro.
         phase1_intro_key = "has_dehydration"
     else:
         phase1_intro_key = "default"
@@ -376,7 +379,8 @@ def build_three_phase_plan(
         phase1_duration = PHASE1_DURATION["has_sensitivity"]
     elif "dryness" in top_concerns:
         phase1_duration = PHASE1_DURATION["has_dry"]
-    elif has_dehydration:
+    elif has_dehydration or "Mild Dehydration Tendency" in state_names:
+        # Issue 10 fix: same — include Mild Dehydration Tendency in duration logic
         phase1_duration = PHASE1_DURATION["has_dehydration"]
     else:
         phase1_duration = PHASE1_DURATION["default"]
@@ -389,9 +393,22 @@ def build_three_phase_plan(
     # We just need to present them as Phase 2.
 
     if recommendation["mode"] == "phased":
-        # Conflict case — Phase 2 from the phased recommendation is already built
-        phase2_morning = recommendation["phases"][1]["morning"]
-        phase2_night = recommendation["phases"][1]["night"]
+        # Conflict case — find Phase 2 by its number key, not by list position.
+        # Issue 9 fix: using [1] assumed Phase 2 is always the second item.
+        # If _build_phased_routine ever reorders phases, [1] would silently
+        # pick the wrong phase. Searching by number key is always correct.
+        phase2 = None
+        for phase in recommendation["phases"]:
+            if phase["number"] == 2:
+                phase2 = phase
+                break
+
+        if phase2 is None:
+            # Fallback — should never happen, but prevents a crash if it does
+            phase2 = recommendation["phases"][0]
+
+        phase2_morning = phase2["morning"]
+        phase2_night = phase2["night"]
         phase2_duration = "Weeks 6 to 12"
     else:
         # Standard case — the whole recommendation IS Phase 2
