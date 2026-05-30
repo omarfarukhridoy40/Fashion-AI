@@ -56,7 +56,6 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     # Add local apps here
     'user',
-    'body_profile',
     'skin',
 ]
 

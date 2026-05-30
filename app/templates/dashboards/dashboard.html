@@ -5,599 +5,374 @@
 
 {% block extra_css %}
 <style>
-
-  /* ── Dashboard Page ── */
-  .dashboard-page {
-    min-height: calc(100vh - 68px);
-    background: var(--cream);
-    padding: 52px 0 80px;
+  /* ── Section rhythm (design system: 36–48px) ── */
+  .dash {
+    padding: 40px 0;
     position: relative;
     overflow: hidden;
   }
-
-  .dashboard-page::before {
+  @media (min-width: 768px) { .dash { padding: 48px 0; } }
+  .dash::before {
     content: '';
     position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse 50% 40% at 80% 10%, rgba(201,169,110,0.09) 0%, transparent 60%),
-      radial-gradient(ellipse 35% 35% at 10% 80%, rgba(139,111,71,0.06) 0%, transparent 60%);
     pointer-events: none;
+    background:
+      radial-gradient(ellipse 50% 40% at 80% 5%, rgba(201,169,110,0.09) 0%, transparent 60%),
+      radial-gradient(ellipse 35% 35% at 8% 85%, rgba(139,111,71,0.06) 0%, transparent 60%);
   }
+  .dash > .container { position: relative; z-index: 1; }
 
-  /* ── Welcome Header ── */
-  .dashboard-header {
-    margin-bottom: 48px;
-  }
-
-  .dashboard-eyebrow {
+  /* ── Welcome header ── */
+  .dash-header { margin-bottom: 36px; }
+  .dash-eyebrow {
     display: inline-block;
     font-size: 0.72rem;
     font-weight: 500;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--accent2);
-    background: rgba(201,169,110,0.1);
-    border: 1px solid rgba(201,169,110,0.25);
+    background: rgba(201,169,110,0.12);
+    border: 1px solid rgba(201,169,110,0.3);
     border-radius: 100px;
     padding: 5px 14px;
     margin-bottom: 14px;
   }
-
-  .dashboard-header h1 {
+  .dash-header h1 {
     font-family: var(--font-display);
     font-size: clamp(2rem, 4vw, 3rem);
     font-weight: 700;
     letter-spacing: -0.025em;
     color: var(--ink);
     line-height: 1.2;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
+  .dash-header h1 em { font-style: italic; color: var(--accent); }
+  .dash-header p { font-size: 0.95rem; color: var(--muted); font-weight: 300; }
 
-  .dashboard-header h1 span {
-    color: var(--accent);
-    font-style: italic;
-  }
-
-  .dashboard-header p {
-    font-size: 0.95rem;
-    color: var(--muted);
-    font-weight: 300;
-  }
-
-  /* ── Quick Actions ── */
-  .quick-actions {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 52px;
-  }
-
-  .quick-action {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: var(--white);
-    border: 1.5px solid var(--stone);
-    border-radius: 100px;
-    font-size: 0.83rem;
-    font-weight: 500;
-    color: var(--ink);
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  .quick-action:hover {
-    border-color: var(--accent);
-    background: rgba(201,169,110,0.06);
-    transform: translateY(-1px);
-  }
-  .quick-action .qa-icon { font-size: 1rem; }
-
-  .quick-action.completed {
-    border-color: #a8d5b5;
-    background: #f0faf4;
-    color: #1e6b3a;
-  }
-
-  /* ── Section Title ── */
-  .section-title {
-    font-size: 0.72rem;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 20px;
-  }
-
-  /* ── Dashboard Grid ── */
-  .dashboard-grid {
+  /* ── Two-pillar grid (mobile-first: stack, then 2 columns) ── */
+  .dash-pillars {
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
+    grid-template-columns: 1fr;
     gap: 20px;
   }
+  @media (min-width: 768px) {
+    .dash-pillars { grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  }
 
-  /* ── Base Card ── */
+  /* A pillar is a vertical stack of cards under a labelled header. */
+  .dash-pillar { display: flex; flex-direction: column; gap: 16px; }
+
+  .pillar-head { display: flex; flex-direction: column; gap: 10px; margin-bottom: 2px; }
+  .pillar-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    align-self: flex-start;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 100px;
+    padding: 5px 13px;
+  }
+  .pillar-tag .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .pillar-tag--live {
+    color: var(--accent2);
+    background: rgba(201,169,110,0.12);
+    border: 1px solid rgba(201,169,110,0.3);
+  }
+  .pillar-tag--live .dot { background: var(--accent); }
+  .pillar-tag--soon {
+    color: var(--muted);
+    background: var(--sand);
+    border: 1px solid var(--stone);
+  }
+  .pillar-tag--soon .dot { background: var(--muted); }
+  .pillar-head h2 {
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  /* ── Card base ── */
   .dash-card {
     background: var(--white);
     border: 1px solid var(--stone);
-    border-radius: 18px;
-    padding: 32px;
+    border-radius: var(--radius);
+    padding: 28px 26px;
     position: relative;
     overflow: hidden;
-    transition: box-shadow 0.25s, transform 0.25s;
+    transition: box-shadow 0.22s ease, transform 0.22s ease;
   }
-  .dash-card:hover {
-    box-shadow: 0 12px 40px rgba(0,0,0,0.08);
-    transform: translateY(-3px);
-  }
+  .dash-card:hover { box-shadow: 0 10px 40px rgba(0,0,0,0.08); transform: translateY(-4px); }
 
-  .dash-card::after {
+  /* Active (live) card — gold accent bar fades in on hover, like home's skin pillar. */
+  .dash-card--active::before {
     content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
+    position: absolute; top: 0; left: 0; right: 0;
     height: 3px;
     background: linear-gradient(90deg, var(--accent), var(--accent2));
     opacity: 0;
-    transition: opacity 0.25s;
+    transition: opacity 0.22s ease;
   }
-  .dash-card:hover::after { opacity: 1; }
+  .dash-card--active:hover::before { opacity: 1; }
 
-  /* ── Card Sizes ── */
-  .card-body-profile  { grid-column: span 5; }
-  .card-outfit        { grid-column: span 7; }
-  .card-wardrobe      { grid-column: span 7; }
-  .card-chatbot       { grid-column: span 5; }
-
-  /* ── Card Icon ── */
-  .card-icon {
-    width: 48px; height: 48px;
-    border-radius: 12px;
+  /* Inert / coming-soon card — muted sand surface, no hover lift, no accent bar. */
+  .dash-card--soon {
     background: var(--sand);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.3rem;
-    margin-bottom: 20px;
-    transition: background 0.22s;
+    border-color: var(--stone);
   }
-  .dash-card:hover .card-icon { background: rgba(201,169,110,0.15); }
+  .dash-card--soon:hover { box-shadow: none; transform: none; }
 
-  /* ── Card Content ── */
   .card-label {
     font-size: 0.7rem;
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--muted);
-    margin-bottom: 6px;
+    margin-bottom: 14px;
   }
-
   .card-title {
     font-family: var(--font-display);
-    font-size: 1.4rem;
+    font-size: 1.35rem;
     font-weight: 700;
-    color: var(--ink);
     letter-spacing: -0.02em;
-    margin-bottom: 10px;
+    color: var(--ink);
+    margin-bottom: 8px;
   }
-
   .card-desc {
-    font-size: 0.855rem;
+    font-size: 0.875rem;
     color: var(--muted);
     line-height: 1.65;
     font-weight: 300;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
 
-  /* ── Status Badge ── */
-  .status-badge {
+  /* Coming-soon chip (muted --sand), reused on every inert card. */
+  .chip {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.75rem;
+    font-size: 0.66rem;
     font-weight: 500;
-    padding: 5px 12px;
-    border-radius: 100px;
-  }
-  .status-badge.pending {
-    background: rgba(201,169,110,0.1);
-    color: var(--accent2);
-    border: 1px solid rgba(201,169,110,0.25);
-  }
-  .status-badge.done {
-    background: #f0faf4;
-    color: #1e6b3a;
-    border: 1px solid #a8d5b5;
-  }
-  .status-badge .status-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-  }
-
-  /* ── Progress Bar ── */
-  .progress-wrap {
-    margin: 20px 0 24px;
-  }
-  .progress-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     color: var(--muted);
-    margin-bottom: 8px;
-  }
-  .progress-bar {
-    height: 6px;
-    background: var(--sand);
+    background: var(--white);
+    border: 1px solid var(--stone);
     border-radius: 100px;
-    overflow: hidden;
+    padding: 4px 11px;
+    margin-bottom: 14px;
   }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 100px;
-    width: 0%;
-    transition: width 1s ease;
-  }
+  .chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
 
-  /* ── Card Action Button ── */
-  .card-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 22px;
-    border-radius: 100px;
-    font-family: var(--font-body);
-    font-size: 0.83rem;
-    font-weight: 500;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    border: none;
-  }
-  .card-btn-primary {
-    background: var(--ink);
-    color: var(--white);
-  }
-  .card-btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
-
-  .card-btn-outline {
-    background: transparent;
-    color: var(--ink);
-    border: 1.5px solid var(--stone);
-  }
-  .card-btn-outline:hover { border-color: var(--ink); background: var(--ink); color: var(--white); }
-
-  /* ── Body Profile Card specific ── */
-  .profile-steps {
-    list-style: none;
-    margin: 16px 0 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .profile-step {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.855rem;
-    color: var(--muted);
-    font-weight: 300;
-  }
-  .profile-step .step-check {
-    width: 20px; height: 20px;
-    border-radius: 50%;
-    border: 1.5px solid var(--stone);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.65rem;
-    flex-shrink: 0;
-    color: var(--stone);
-  }
-  .profile-step.done-step .step-check {
-    background: #f0faf4;
-    border-color: #a8d5b5;
-    color: #1e6b3a;
-  }
-  .profile-step.done-step { color: var(--ink); }
-
-  /* ── Outfit Card specific ── */
-  .outfit-preview {
-    display: flex;
-    gap: 10px;
-    margin: 16px 0 24px;
-    flex-wrap: wrap;
-  }
-  .outfit-placeholder {
-    flex: 1;
-    min-width: 80px;
-    height: 100px;
-    background: var(--sand);
-    border-radius: 10px;
-    border: 1.5px dashed var(--stone);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-    color: var(--stone);
-    transition: background 0.2s;
-  }
-  .outfit-placeholder:hover { background: rgba(201,169,110,0.1); }
-
-  /* ── Wardrobe Card specific ── */
-  .wardrobe-stats {
+  /* ── Skin snapshot internals (real data) ── */
+  .snap-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin: 16px 0 24px;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
   }
-  .wardrobe-stat {
-    background: var(--sand);
-    border-radius: 10px;
-    padding: 14px;
-    text-align: center;
-  }
-  .wardrobe-stat-num {
-    font-family: var(--font-display);
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--ink);
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .wardrobe-stat-label {
-    font-size: 0.72rem;
-    color: var(--muted);
-    font-weight: 400;
-  }
-
-  /* ── Chatbot Card specific ── */
-  .chat-preview {
-    margin: 16px 0 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .chat-bubble {
-    padding: 10px 14px;
-    border-radius: 12px;
-    font-size: 0.83rem;
-    line-height: 1.5;
-    max-width: 90%;
-    font-weight: 300;
-  }
-  .chat-bubble.ai {
-    background: var(--sand);
-    color: var(--ink);
-    border-bottom-left-radius: 4px;
-    align-self: flex-start;
-  }
-  .chat-bubble.user {
-    background: var(--ink);
-    color: var(--white);
-    border-bottom-right-radius: 4px;
-    align-self: flex-end;
-  }
-  .chat-bubble .bubble-label {
+  .snap-key {
     font-size: 0.68rem;
     font-weight: 500;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    opacity: 0.6;
+    color: var(--muted);
     margin-bottom: 4px;
   }
-
-  /* ── Coming Soon overlay ── */
-  .coming-soon-wrap { position: relative; }
-  .coming-soon-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(250,248,245,0.7);
-    backdrop-filter: blur(2px);
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2;
+  .snap-val {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
   }
-  .coming-soon-tag {
-    background: var(--ink);
-    color: var(--white);
+  .snap-block { margin-bottom: 18px; }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .state-tag {
+    background: rgba(201,169,110,0.12);
+    border: 1px solid rgba(201,169,110,0.3);
+    color: var(--accent2);
+    border-radius: 100px;
+    padding: 5px 13px;
     font-size: 0.75rem;
     font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 8px 18px;
+  }
+  .concern-tag {
+    background: var(--sand);
+    border: 1px solid var(--stone);
+    color: var(--ink);
     border-radius: 100px;
+    padding: 5px 13px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .state-reason {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.55;
+    font-weight: 300;
+    margin-top: 8px;
+  }
+  .conflict-line {
+    margin: 4px 0 18px;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: #7a5a10;
+    background: #fdf8ec;
+    border: 1px solid #e8d08a;
+    border-radius: var(--radius);
+    padding: 10px 14px;
   }
 
-  /* ── Responsive ── */
-  @media (max-width: 1024px) {
-    .card-body-profile  { grid-column: span 6; }
-    .card-outfit        { grid-column: span 6; }
-    .card-wardrobe      { grid-column: span 6; }
-    .card-chatbot       { grid-column: span 6; }
-  }
+  .dash-card .btn { margin-top: 4px; }
 
-  @media (max-width: 768px) {
-    .dashboard-grid { grid-template-columns: 1fr; }
-    .card-body-profile,
-    .card-outfit,
-    .card-wardrobe,
-    .card-chatbot { grid-column: span 1; }
-    .wardrobe-stats { grid-template-columns: repeat(3, 1fr); }
+  /* Disabled "Coming Soon" pill — not actionable, no href (matches home.html). */
+  .btn-soon {
+    background: var(--white);
+    color: var(--muted);
+    border: 1.5px solid var(--stone);
+    cursor: not-allowed;
   }
-
-  @media (max-width: 480px) {
-    .quick-actions { gap: 8px; }
-    .wardrobe-stats { grid-template-columns: 1fr 1fr; }
-  }
-
+  .btn-soon:hover { transform: none; }
 </style>
 {% endblock %}
 
 
 {% block content %}
-<section class="dashboard-page">
+<section class="dash">
   <div class="container">
 
-    <!-- ── Welcome Header ── -->
-    <div class="dashboard-header">
-      <div class="dashboard-eyebrow">✦ Your Style Hub</div>
-      <h1>Welcome back, <span>{{ user.first_name }}</span></h1>
-      <p>Here's everything you need to build your perfect wardrobe.</p>
+    <!-- ── Welcome header ── -->
+    <div class="dash-header">
+      <span class="dash-eyebrow">✦ Your Hub</span>
+      <h1>Welcome back, <em>{{ user.first_name }}</em></h1>
+      <p>Your skincare and style, in one place.</p>
     </div>
 
-    <!-- ── Quick Actions ── -->
-    <div class="quick-actions">
-      {% if has_body_profile %}
-        <a class="quick-action completed" href="{% url 'body_profile' %}">
-          <span class="qa-icon">✔</span> Body Profile Completed
-        </a>
-      {% else %}
-        <a class="quick-action" href="{% url 'create_body_profile' %}">
-          <span class="qa-icon">➕</span> Create Body Profile
-        </a>
-      {% endif %}
-      <a class="quick-action">
-        <span class="qa-icon">👕</span> Upload Outfit
-      </a>
-      <a class="quick-action">
-        <span class="qa-icon">🤖</span> Get AI Recommendation
-      </a>
-      <a class="quick-action">
-        <span class="qa-icon">📦</span> My Wardrobe
-      </a>
-    </div>
+    <!-- ── Two pillars ── -->
+    <div class="dash-pillars">
 
-    <!-- ── Cards ── -->
-    <p class="section-title">Your Dashboard</p>
-    <div class="dashboard-grid">
-
-      <!-- ── Body Profile Card ── -->
-      <div class="dash-card card-body-profile">
-        <div class="card-icon">📐</div>
-        <div class="card-label">Step 1</div>
-        <div class="card-title">Body Profile</div>
-        <p class="card-desc">Set up your measurements and body shape so the AI can make accurate style recommendations.</p>
-
-        <ul class="profile-steps">
-          <li class="profile-step {% if profile_steps.basic %}done-step{% endif %}">
-            <span class="step-check">{% if profile_steps.basic %}✓{% else %}○{% endif %}</span> Basic measurements
-          </li>
-          <li class="profile-step {% if profile_steps.shape %}done-step{% endif %}">
-            <span class="step-check">{% if profile_steps.shape %}✓{% else %}○{% endif %}</span> Body shape selected
-          </li>
-          <li class="profile-step {% if profile_steps.photo %}done-step{% endif %}">
-            <span class="step-check">{% if profile_steps.photo %}✓{% else %}○{% endif %}</span> Photo uploaded
-          </li>
-          <li class="profile-step {% if profile_steps.skin %}done-step{% endif %}">
-            <span class="step-check">{% if profile_steps.skin %}✓{% else %}○{% endif %}</span> Skin tone analyzed
-          </li>
-        </ul>
-
-        <div class="progress-wrap">
-          <div class="progress-label">
-            <span>Profile completion</span>
-            <span>{{ profile_progress_percent }}%</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: {{ profile_progress_percent }}%"></div>
-          </div>
+      <!-- ════════ SKIN PILLAR (live, real data) ════════ -->
+      <div class="dash-pillar">
+        <div class="pillar-head">
+          <span class="pillar-tag pillar-tag--live"><span class="dot"></span> Live</span>
+          <h2>Skin AI</h2>
         </div>
 
-        {% if has_body_profile and profile_progress_percent == 100 %}
-          <span class="status-badge done">
-            <span class="status-dot"></span> Completed
-          </span>
-        {% elif has_body_profile %}
-          <span class="status-badge pending">
-            <span class="status-dot"></span> In Progress
-          </span>
+        {% if skin_profile %}
+
+          <!-- Snapshot card — real persisted analysis -->
+          <div class="dash-card dash-card--active">
+            <div class="card-label">Your Skin Snapshot</div>
+
+            <div class="snap-grid">
+              <div>
+                <div class="snap-key">Skin Type</div>
+                <div class="snap-val">{{ skin_profile.skin_type }}</div>
+              </div>
+              {% if skin_profile.primary_concern %}
+              <div>
+                <div class="snap-key">Primary Concern</div>
+                <div class="snap-val">{{ skin_profile.primary_concern|cut:"_"|title }}</div>
+              </div>
+              {% endif %}
+            </div>
+
+            {% if skin_profile.skin_states %}
+            <div class="snap-block">
+              <div class="snap-key">Skin States</div>
+              <div class="tag-row">
+                {% for s in skin_profile.skin_states %}
+                  <span class="state-tag">{{ s.state }}</span>
+                {% endfor %}
+              </div>
+              {% for s in skin_profile.skin_states %}
+                {% if s.reason %}<p class="state-reason">{{ s.state }}: {{ s.reason }}</p>{% endif %}
+              {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if skin_profile.top_concerns %}
+            <div class="snap-block">
+              <div class="snap-key">Top Concerns</div>
+              <div class="tag-row">
+                {% for c in skin_profile.top_concerns %}
+                  <span class="concern-tag">{{ c|cut:"_"|title }}</span>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+
+            {% if skin_profile.conflict_detected %}
+            <p class="conflict-line">⚠ Conflicting concerns detected — your plan follows a phased, barrier-first approach.</p>
+            {% endif %}
+
+            <a href="{% url 'skin_form' %}" class="btn btn-primary">Update My Skin Analysis</a>
+          </div>
+
+          <!-- Routine card — inert, wired in a later brief -->
+          <div class="dash-card dash-card--soon">
+            <span class="chip"><span class="dot"></span> Coming Soon</span>
+            <div class="card-title">Your Routine</div>
+            <p class="card-desc">Your saved morning and night steps, laid out day by day. This view is being wired up next.</p>
+            <button class="btn btn-soon" type="button" disabled aria-disabled="true">Coming Soon</button>
+          </div>
+
+          <!-- Progress / streak card — inert, wired in a later brief -->
+          <div class="dash-card dash-card--soon">
+            <span class="chip"><span class="dot"></span> Coming Soon</span>
+            <div class="card-title">Progress &amp; Streak</div>
+            <p class="card-desc">Track how consistently you follow your routine and watch your skin improve week over week.</p>
+            <button class="btn btn-soon" type="button" disabled aria-disabled="true">Coming Soon</button>
+          </div>
+
         {% else %}
-          <span class="status-badge pending">
-            <span class="status-dot"></span> Not started
-          </span>
+
+          <!-- Empty state — no profile yet -->
+          <div class="dash-card dash-card--active">
+            <div class="card-label">Get Started</div>
+            <div class="card-title">Analyze your skin to get started</div>
+            <p class="card-desc">
+              Answer a few quick questions to get your skin type, concerns, and a morning-and-night
+              routine built for Bangladesh's climate and your budget.
+            </p>
+            <a href="{% url 'skin_form' %}" class="btn btn-primary">Analyze My Skin</a>
+          </div>
+
         {% endif %}
-
-        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;">
-          {% if has_body_profile %}
-            <a href="{% url 'body_profile' %}" class="card-btn card-btn-primary">👤 Check your profile</a>
-          {% else %}
-            <a href="{% url 'create_body_profile' %}" class="card-btn card-btn-primary">➕ Create your body profile</a>
-          {% endif %}
-        </div>
       </div>
 
-      <!-- ── Outfit Recommendations Card ── -->
-      <div class="dash-card card-outfit">
-        <div class="card-icon">✨</div>
-        <div class="card-label">AI Powered</div>
-        <div class="card-title">Outfit Recommendations</div>
-        <p class="card-desc">Get personalized outfit suggestions based on your body profile, skin tone, and style preferences.</p>
-
-        <div class="outfit-preview">
-          <div class="outfit-placeholder">👕</div>
-          <div class="outfit-placeholder">👗</div>
-          <div class="outfit-placeholder">🧥</div>
-          <div class="outfit-placeholder">+</div>
+      <!-- ════════ FASHION PILLAR (all coming soon) ════════ -->
+      <div class="dash-pillar">
+        <div class="pillar-head">
+          <span class="pillar-tag pillar-tag--soon"><span class="dot"></span> Coming Soon</span>
+          <h2>Fashion AI</h2>
         </div>
 
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <a class="card-btn card-btn-primary">🤖 Get Recommendations</a>
-          <a class="card-btn card-btn-outline">View All</a>
-        </div>
-      </div>
-
-      <!-- ── Wardrobe Card ── -->
-      <div class="dash-card card-wardrobe">
-        <div class="card-icon">📦</div>
-        <div class="card-label">My Collection</div>
-        <div class="card-title">Wardrobe</div>
-        <p class="card-desc">Manage your clothing collection. Upload items and let AI suggest the best outfit combinations.</p>
-
-        <div class="wardrobe-stats">
-          <div class="wardrobe-stat">
-            <div class="wardrobe-stat-num">0</div>
-            <div class="wardrobe-stat-label">Tops</div>
-          </div>
-          <div class="wardrobe-stat">
-            <div class="wardrobe-stat-num">0</div>
-            <div class="wardrobe-stat-label">Bottoms</div>
-          </div>
-          <div class="wardrobe-stat">
-            <div class="wardrobe-stat-num">0</div>
-            <div class="wardrobe-stat-label">Outfits</div>
-          </div>
+        <div class="dash-card dash-card--soon">
+          <span class="chip"><span class="dot"></span> Coming Soon</span>
+          <div class="card-title">Outfit Recommendation</div>
+          <p class="card-desc">Personalized outfits matched to your skin tone, body type, and the local climate.</p>
+          <button class="btn btn-soon" type="button" disabled aria-disabled="true">Coming Soon</button>
         </div>
 
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <a class="card-btn card-btn-primary">👕 Upload Item</a>
-          <a class="card-btn card-btn-outline">Browse Wardrobe</a>
-        </div>
-      </div>
-
-      <!-- ── Chatbot Card ── -->
-      <div class="dash-card card-chatbot">
-        <div class="card-icon">🤖</div>
-        <div class="card-label">AI Assistant</div>
-        <div class="card-title">Style Chatbot</div>
-        <p class="card-desc">Ask anything about fashion, color matching, or get personalized style advice instantly.</p>
-
-        <div class="chat-preview">
-          <div class="chat-bubble ai">
-            <div class="bubble-label">Fashion AI</div>
-            Hey {{ user.first_name }}! What style are you going for today?
-          </div>
-          <div class="chat-bubble user">
-            <div class="bubble-label">You</div>
-            Something casual but elegant 🙂
-          </div>
-          <div class="chat-bubble ai">
-            <div class="bubble-label">Fashion AI</div>
-            Great choice! Based on your profile I have some ideas...
-          </div>
+        <div class="dash-card dash-card--soon">
+          <span class="chip"><span class="dot"></span> Coming Soon</span>
+          <div class="card-title">Virtual Closet</div>
+          <p class="card-desc">Upload your wardrobe and let AI mix, match, and plan complete looks for you.</p>
+          <button class="btn btn-soon" type="button" disabled aria-disabled="true">Coming Soon</button>
         </div>
 
-        <a class="card-btn card-btn-primary">💬 Start Chatting</a>
+        <div class="dash-card dash-card--soon">
+          <span class="chip"><span class="dot"></span> Coming Soon</span>
+          <div class="card-title">Style Chatbot</div>
+          <p class="card-desc">Ask anything about fashion, colour matching, and styling — and get instant advice.</p>
+          <button class="btn btn-soon" type="button" disabled aria-disabled="true">Coming Soon</button>
+        </div>
       </div>
 
     </div>
