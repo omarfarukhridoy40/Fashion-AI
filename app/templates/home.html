@@ -1,29 +1,34 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Fashion AI – Your Personal Style Assistant{% endblock %}
+{% block title %}Fashion AI – Skincare & Style, Built for Bangladesh{% endblock %}
 
 {% block extra_css %}
 <style>
+  /* ── Shared section rhythm (design system: 36–48px) ── */
+  .home-section { padding: 40px 0; }
+  @media (min-width: 768px) { .home-section { padding: 48px 0; } }
+
   /* ── Hero ── */
   .hero {
-    padding: 96px 0 80px;
-    text-align: center;
     position: relative;
     overflow: hidden;
+    padding: 48px 0;
+    text-align: center;
   }
   .hero::before {
     content: '';
     position: absolute; inset: 0;
     background:
       radial-gradient(ellipse 70% 50% at 50% 0%, rgba(201,169,110,0.13) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 40% at 80% 80%, rgba(139,111,71,0.07) 0%, transparent 60%);
+      radial-gradient(ellipse 40% 40% at 85% 90%, rgba(139,111,71,0.07) 0%, transparent 60%);
     pointer-events: none;
   }
+  .hero > .container { position: relative; z-index: 1; }
 
   .hero-eyebrow {
     display: inline-block;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 500;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -32,62 +37,32 @@
     border: 1px solid rgba(201,169,110,0.3);
     border-radius: 100px;
     padding: 6px 16px;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
   }
 
   .hero h1 {
     font-family: var(--font-display);
-    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-size: clamp(2.4rem, 7vw, 4.4rem);
     font-weight: 700;
     line-height: 1.1;
     letter-spacing: -0.03em;
     color: var(--ink);
-    max-width: 780px;
-    margin: 0 auto 24px;
+    max-width: 760px;
+    margin: 0 auto 22px;
   }
   .hero h1 em { font-style: italic; color: var(--accent); }
 
-  .hero-desc {
+  .hero-lead {
     font-size: 1.05rem;
     color: var(--muted);
-    max-width: 520px;
-    margin: 0 auto 40px;
+    max-width: 560px;
+    margin: 0 auto;
     font-weight: 300;
     line-height: 1.7;
   }
 
-  .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-
-  .hero-visual {
-    margin-top: 72px;
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-
-  .hero-badge {
-    background: var(--white);
-    border: 1px solid var(--stone);
-    border-radius: var(--radius);
-    padding: 16px 22px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 0.85rem;
-    color: var(--ink);
-    font-weight: 500;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-  }
-  .hero-badge .dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-    flex-shrink: 0;
-  }
-
-  /* ── Section Header ── */
-  .section-header { text-align: center; margin-bottom: 56px; }
+  /* ── Section header (shared) ── */
+  .section-header { text-align: center; margin-bottom: 40px; }
   .section-label {
     display: inline-block;
     font-size: 0.72rem;
@@ -95,158 +70,183 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--accent2);
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
   .section-header h2 {
     font-family: var(--font-display);
-    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
     font-weight: 700;
     letter-spacing: -0.025em;
     line-height: 1.2;
     color: var(--ink);
-    margin-bottom: 14px;
-  }
-  .section-header p {
-    font-size: 1rem;
-    color: var(--muted);
-    max-width: 480px;
-    margin: 0 auto;
-    font-weight: 300;
   }
 
-  /* ── How It Works ── */
-  .how-it-works {
-    padding: 96px 0;
+  /* ── Two pillars ── */
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  @media (min-width: 768px) {
+    .pillars-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
+  }
+
+  .pillar {
+    background: var(--white);
+    border: 1px solid var(--stone);
+    border-radius: var(--radius);
+    padding: 34px 30px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.22s ease, transform 0.22s ease;
+  }
+  .pillar::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    opacity: 0;
+    transition: opacity 0.22s ease;
+  }
+  .pillar:hover { box-shadow: 0 10px 40px rgba(0,0,0,0.08); transform: translateY(-4px); }
+  .pillar--skin::before { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+  .pillar--skin:hover::before { opacity: 1; }
+
+  .pillar-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    align-self: flex-start;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 100px;
+    padding: 5px 13px;
+    margin-bottom: 20px;
+  }
+  .pillar-tag .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .pillar-tag--live {
+    color: var(--accent2);
+    background: rgba(201,169,110,0.12);
+    border: 1px solid rgba(201,169,110,0.3);
+  }
+  .pillar-tag--live .dot { background: var(--accent); }
+  .pillar-tag--soon {
+    color: var(--muted);
+    background: var(--sand);
+    border: 1px solid var(--stone);
+  }
+  .pillar-tag--soon .dot { background: var(--muted); }
+
+  .pillar-icon { font-size: 1.9rem; margin-bottom: 14px; display: block; }
+
+  .pillar h3 {
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .pillar p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.65;
+    font-weight: 300;
+    flex: 1;
+    margin-bottom: 24px;
+  }
+
+  .pillar .btn { align-self: flex-start; }
+
+  /* Disabled "Coming Soon" pill — not actionable, no href */
+  .btn-soon {
+    background: var(--sand);
+    color: var(--muted);
+    border: 1.5px solid var(--stone);
+    cursor: not-allowed;
+  }
+  .btn-soon:hover { transform: none; }
+
+  /* ── How it works ── */
+  .steps {
     background: var(--sand);
     border-top: 1px solid var(--stone);
     border-bottom: 1px solid var(--stone);
   }
-
   .steps-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 24px;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  @media (min-width: 640px) {
+    .steps-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
   }
 
-  .step-card {
+  .step {
     background: var(--white);
-    border-radius: var(--radius);
-    padding: 36px 28px;
     border: 1px solid var(--stone);
-    transition: box-shadow 0.22s, transform 0.22s;
+    border-radius: var(--radius);
+    padding: 30px 26px;
+    transition: box-shadow 0.22s ease, transform 0.22s ease;
   }
-  .step-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.07); transform: translateY(-3px); }
-
-  .step-number {
+  .step:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.07); transform: translateY(-3px); }
+  .step-num {
     font-family: var(--font-display);
-    font-size: 3.2rem;
+    font-size: 2.6rem;
     font-weight: 700;
     color: var(--stone);
     line-height: 1;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
-  .step-icon { font-size: 1.6rem; margin-bottom: 16px; display: block; }
-  .step-card h3 { font-size: 1rem; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
-  .step-card p { font-size: 0.875rem; color: var(--muted); line-height: 1.6; font-weight: 300; }
+  .step h3 { font-size: 0.98rem; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
+  .step p { font-size: 0.875rem; color: var(--muted); line-height: 1.6; font-weight: 300; }
 
-  /* ── Features ── */
-  .features { padding: 96px 0; }
-
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 24px;
-  }
-
-  .feature-card {
-    background: var(--white);
-    border: 1px solid var(--stone);
-    border-radius: var(--radius);
-    padding: 40px 32px;
-    position: relative;
-    overflow: hidden;
-    transition: box-shadow 0.22s, transform 0.22s;
-  }
-  .feature-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    opacity: 0;
-    transition: opacity 0.22s;
-  }
-  .feature-card:hover { box-shadow: 0 10px 40px rgba(0,0,0,0.08); transform: translateY(-4px); }
-  .feature-card:hover::before { opacity: 1; }
-
-  .feature-icon {
-    width: 52px; height: 52px;
-    background: var(--sand);
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.4rem;
-    margin-bottom: 22px;
-    transition: background 0.22s;
-  }
-  .feature-card:hover .feature-icon { background: rgba(201,169,110,0.15); }
-  .feature-card h3 { font-size: 1.05rem; font-weight: 500; color: var(--ink); margin-bottom: 10px; }
-  .feature-card p { font-size: 0.875rem; color: var(--muted); line-height: 1.65; font-weight: 300; }
-
-  .badge-soon {
-    display: inline-block;
-    font-size: 0.68rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--accent2);
-    background: rgba(201,169,110,0.12);
-    border: 1px solid rgba(201,169,110,0.3);
-    border-radius: 100px;
-    padding: 3px 10px;
-    margin-left: 8px;
-    vertical-align: middle;
-  }
-
-  /* ── CTA ── */
-  .cta-section {
-    padding: 80px 0;
+  /* ── Bottom CTA band ── */
+  .cta-band {
     background: var(--ink);
     text-align: center;
     position: relative;
     overflow: hidden;
   }
-  .cta-section::before {
+  .cta-band::before {
     content: '';
     position: absolute; inset: 0;
     background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(201,169,110,0.12) 0%, transparent 70%);
     pointer-events: none;
   }
-  .cta-section .section-label { color: var(--accent); }
-  .cta-section h2 {
+  .cta-band > .container { position: relative; z-index: 1; }
+  .cta-band .section-label { color: var(--accent); }
+  .cta-band h2 {
     font-family: var(--font-display);
-    font-size: clamp(2rem, 4vw, 3rem);
+    font-size: clamp(1.9rem, 4vw, 2.8rem);
     font-weight: 700;
     letter-spacing: -0.025em;
     color: var(--white);
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
-  .cta-section p {
+  .cta-band p {
     font-size: 1rem;
     color: rgba(255,255,255,0.55);
-    max-width: 420px;
-    margin: 0 auto 36px;
+    max-width: 440px;
+    margin: 0 auto 32px;
     font-weight: 300;
   }
+  .cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
-  /* ── Responsive ── */
-  @media (max-width: 768px) {
-    .hero { padding: 64px 0 56px; }
-    .hero-visual { gap: 12px; }
-    .hero-badge { font-size: 0.8rem; padding: 12px 16px; }
-    .steps-grid { grid-template-columns: 1fr 1fr; }
+  /* Light-on-dark secondary button for the dark CTA band */
+  .btn-outline-light {
+    background: transparent;
+    color: var(--white);
+    border: 1.5px solid rgba(255,255,255,0.3);
   }
-  @media (max-width: 480px) {
-    .steps-grid { grid-template-columns: 1fr; }
-    .features-grid { grid-template-columns: 1fr; }
+  .btn-outline-light:hover {
+    border-color: var(--white);
+    background: var(--white);
+    color: var(--ink);
+    transform: translateY(-1px);
   }
 </style>
 {% endblock %}
@@ -257,106 +257,108 @@
   <!-- ── Hero ── -->
   <section class="hero">
     <div class="container">
-      <div class="hero-eyebrow">✦ Powered by Artificial Intelligence</div>
-      <h1>AI Powered Personal<br><em>Fashion Assistant</em></h1>
-      <p class="hero-desc">Discover the colors, outfits, and styles that truly complement your body type and skin tone — curated by AI, made personal for you.</p>
-      <div class="hero-cta">
-        {% if user.is_authenticated %}
-        <a href="{% url 'create_body_profile' %}" class="btn btn-primary">Start Your Style Profile</a>
-        {% else %}
-        <a href="{% url 'register' %}" class="btn btn-primary">Start Your Style Profile</a>
-          <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
-        {% endif %}
+      <span class="hero-eyebrow">✦ Skincare &amp; Style for Bangladesh</span>
+      <h1>Your skin and style,<br><em>decoded by AI</em></h1>
+      <p class="hero-lead">
+        Personalized skincare and fashion guidance built for Bangladesh's climate,
+        local skin tones, and real-world budgets — so your routine and your wardrobe
+        actually fit your life.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Two Pillars ── -->
+  <section class="home-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Two Pillars</span>
+        <h2>Where would you like to start?</h2>
       </div>
-      <div class="hero-visual">
-        <div class="hero-badge"><span class="dot"></span> Personalized Color Analysis</div>
-        <div class="hero-badge"><span class="dot"></span> Body-Type Smart Styling</div>
-        <div class="hero-badge"><span class="dot"></span> Skin Tone Matching</div>
+
+      <div class="pillars-grid">
+
+        <!-- Pillar 1: Skin AI (active) -->
+        <div class="pillar pillar--skin">
+          <span class="pillar-tag pillar-tag--live"><span class="dot"></span> Live Now</span>
+          <span class="pillar-icon">🧴</span>
+          <h3>Skin AI</h3>
+          <p>
+            Answer a few quick questions and get a personalized read on your skin type,
+            concerns, and a morning-and-night routine matched to Bangladesh's humidity
+            and your budget. Clear ingredients to use, ingredients to avoid, and a plan
+            you can actually follow.
+          </p>
+          <a href="{% url 'skin_form' %}" class="btn btn-primary">Analyze My Skin</a>
+        </div>
+
+        <!-- Pillar 2: Fashion AI (coming soon) -->
+        <div class="pillar pillar--fashion">
+          <span class="pillar-tag pillar-tag--soon"><span class="dot"></span> Coming Soon</span>
+          <span class="pillar-icon">👗</span>
+          <h3>Fashion AI</h3>
+          <p>
+            Soon you'll get colors, outfits, and styling guidance tuned to your skin
+            tone, body type, and the local climate — turning everyday choices into a
+            wardrobe that feels unmistakably yours. We're building it now.
+          </p>
+          <button class="btn btn-soon" type="button" disabled aria-disabled="true">Coming Soon</button>
+        </div>
+
       </div>
     </div>
   </section>
 
   <!-- ── How It Works ── -->
-  <section class="how-it-works" id="how-it-works">
+  <section class="home-section steps">
     <div class="container">
       <div class="section-header">
         <span class="section-label">The Process</span>
         <h2>How It Works</h2>
-        <p>Four simple steps to unlock your personalized style identity.</p>
       </div>
+
       <div class="steps-grid">
 
-        <div class="step-card">
-          <div class="step-number">01</div>
-          <span class="step-icon">👤</span>
-          <h3>Create Your Account</h3>
-          <p>Sign up in seconds and set up your private style profile with a few quick details.</p>
+        <div class="step">
+          <div class="step-num">01</div>
+          <h3>Tell us about your skin</h3>
+          <p>Answer a short, mobile-friendly questionnaire — no photos or sign-up required to begin.</p>
         </div>
 
-        <div class="step-card">
-          <div class="step-number">02</div>
-          <span class="step-icon">📐</span>
-          <h3>Enter Your Body Profile</h3>
-          <p>Share your measurements and body shape so our AI can understand your unique silhouette.</p>
+        <div class="step">
+          <div class="step-num">02</div>
+          <h3>Get your analysis</h3>
+          <p>See your skin type, primary concern, and a routine built for local weather and budgets.</p>
         </div>
 
-        <div class="step-card">
-          <div class="step-number">03</div>
-          <span class="step-icon">📷</span>
-          <h3>Upload Your Photo</h3>
-          <p>A simple selfie helps the AI analyze your skin tone and features for precise color recommendations.</p>
-        </div>
-
-        <div class="step-card">
-          <div class="step-number">04</div>
-          <span class="step-icon">✨</span>
-          <h3>Get AI Recommendations</h3>
-          <p>Receive a full fashion report: colors, outfits, and style directions tailored specifically to you.</p>
+        <div class="step">
+          <div class="step-num">03</div>
+          <h3>Follow your plan</h3>
+          <p>Use your day and night steps, recommended ingredients, and goals to track real progress.</p>
         </div>
 
       </div>
     </div>
   </section>
 
-  <!-- ── Features ── -->
-  <section class="features">
+  <!-- ── Bottom CTA Band ── -->
+  <section class="home-section cta-band">
     <div class="container">
-      <div class="section-header">
-        <span class="section-label">What You Get</span>
-        <h2>Feature Preview</h2>
-        <p>Every tool you need to build a wardrobe that works for you.</p>
-      </div>
-      <div class="features-grid">
-
-        <div class="feature-card">
-          <div class="feature-icon">🎨</div>
-          <h3>Color Analysis</h3>
-          <p>Our AI studies your skin tone, undertones, and natural coloring to build a personalized palette of flattering colors — from everyday basics to statement hues.</p>
+      <span class="section-label">Get Started</span>
+      {% if user.is_authenticated %}
+        <h2>Welcome back — your skin<br>is ready when you are</h2>
+        <p>Jump back into your dashboard or run a fresh skin analysis in minutes.</p>
+        <div class="cta-actions">
+          <a href="{% url 'dashboard' %}" class="btn btn-accent">Go to Dashboard</a>
+          <a href="{% url 'skin_form' %}" class="btn btn-outline-light">Analyze My Skin</a>
         </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">👗</div>
-          <h3>Outfit Recommendations</h3>
-          <p>Get curated outfit suggestions matched to your body type, lifestyle, and occasion — every combination designed to make you feel confident and put-together.</p>
+      {% else %}
+        <h2>Ready to understand<br>your skin?</h2>
+        <p>Create a free account to save your results, or log in to pick up where you left off.</p>
+        <div class="cta-actions">
+          <a href="{% url 'register' %}" class="btn btn-accent">Create Your Account</a>
+          <a href="{% url 'login' %}" class="btn btn-outline-light">Login</a>
         </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">🧍</div>
-          <h3>3D Avatar <span class="badge-soon">Coming Soon</span></h3>
-          <p>Try outfits on a personalized 3D avatar that mirrors your exact body proportions — see how clothes look before you ever buy them.</p>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ── CTA ── -->
-  <section class="cta-section">
-    <div class="container">
-      <span class="section-label">Get Started Today</span>
-      <h2>Ready to discover your<br>personal style?</h2>
-      <p>Join thousands of users who've already transformed the way they dress.</p>
-      <a href="{% url 'register' %}" class="btn btn-accent">Create Your Account</a>
+      {% endif %}
     </div>
   </section>
 
