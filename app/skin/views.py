@@ -9,7 +9,143 @@ from .logic import run_skin_engine
 from .masks import get_mask_recommendations
 from .goals import build_goal_roadmap, get_goal_choices
 from .routine import build_three_phase_plan
-from .models import UserSkinProfile
+from .db_access import get_ingredient_db
+from .models import Product, UserSkinProfile
+
+
+# Budget tiers ordered cheapest-first — the BD audience is budget-conscious, so we
+# surface the lowest tier first. Anything unexpected sorts last (via .get default).
+_BUDGET_ORDER = {"low": 0, "medium": 1, "high": 2}
+
+# Skin states that mark a user as sensitivity-restricted. Mirrors masks.py exactly
+# so product filtering and mask filtering use the SAME authoritative signal.
+_SENSITIVITY_STATES = {"Sensitized", "Compromised Barrier"}
+
+
+def _ingredient_keys_from_result(result):
+    """
+    Best-effort recovery of the ingredient KEY strings the routine recommends.
+
+    The engine does not expose a list of ingredient keys: run_skin_engine() has no
+    "ingredients_to_use" key, the rendered morning/night steps drop the per-serum
+    "ingredient" key, and recommendation["ingredients_used"] carries display LABELS
+    (standard mode: {label, why, time}; phased mode: hero-ingredient label strings),
+    not keys. Product.ingredient_key matches Ingredient.key, so we must map to keys.
+
+    We reverse the ingredient DB (key -> {label, ...}) into a label -> key map and
+    look each used label up. Labels that don't resolve are skipped — which simply
+    means no products for them (never a fabricated match). Order is preserved and
+    de-duplicated.
+    """
+    recommendation = result.get("recommendation") or {}
+    used = recommendation.get("ingredients_used") or []
+
+    # Pull the label out of each entry: standard mode entries are dicts with a
+    # "label"; phased mode entries are plain label strings.
+    used_labels = []
+    for entry in used:
+        if isinstance(entry, dict):
+            label = entry.get("label", "")
+        else:
+            label = entry
+        if label:
+            used_labels.append(label)
+
+    # Build a label -> key reversal from the ingredient DB (cached; keyed by key).
+    ingredient_db = get_ingredient_db()
+    label_to_key = {}
+    for key, data in ingredient_db.items():
+        label = (data or {}).get("label")
+        if label:
+            label_to_key.setdefault(label, key)
+
+    keys = []
+    seen = set()
+    for label in used_labels:
+        key = label_to_key.get(label)
+        if key and key not in seen:
+            keys.append(key)
+            seen.add(key)
+
+    return keys
+
+
+def _user_is_sensitivity_restricted(result):
+    """
+    Mirror masks.py: a user is sensitivity-restricted if a "Sensitized" or
+    "Compromised Barrier" skin state is present, OR "sensitivity" is a top concern.
+    Using the same signal keeps product and mask gating consistent.
+    """
+    state_names = {s.get("state") for s in result.get("skin_states", [])}
+    if state_names & _SENSITIVITY_STATES:
+        return True
+    return "sensitivity" in (result.get("top_concerns") or [])
+
+
+def _attach_product_matches(result):
+    """
+    Attach curated Product recommendations to the result, grouped by ingredient.
+
+    Read-only. For each recommended ingredient key, find active Products for that
+    key, then filter by skin-type fit and (if the user is sensitivity-restricted)
+    sensitivity-safety. Ingredients with no surviving product are omitted entirely,
+    so the template renders nothing for them — we never fabricate a product.
+
+    Builds result["product_matches"] = [
+        {"ingredient_key": k, "ingredient_label": <label or key>,
+         "products": [<Product>, ...]}, ...
+    ]
+    """
+    keys = _ingredient_keys_from_result(result)
+    if not keys:
+        result["product_matches"] = []
+        return result
+
+    skin_type = result.get("skin_type", "")
+    restrict_to_safe = _user_is_sensitivity_restricted(result)
+
+    # ONE query for every relevant ingredient_key, grouped in Python — avoids an
+    # N+1 loop. Ordered so the in-Python grouping yields cheapest-first, then name.
+    products = list(
+        Product.objects.filter(is_active=True, ingredient_key__in=keys)
+    )
+
+    # Group surviving products by ingredient_key after applying the two filters.
+    by_key = {}
+    for product in products:
+        # SENSITIVITY: when restricted, keep only sensitivity-safe products.
+        if restrict_to_safe and not product.sensitivity_safe:
+            continue
+
+        # SKIN TYPE: empty compatible list = all types; otherwise must contain the
+        # user's skin type.
+        compatible = product.get_compatible_types_list()
+        if compatible and skin_type not in compatible:
+            continue
+
+        by_key.setdefault(product.ingredient_key, []).append(product)
+
+    # Label lookup for the heading (fall back to the key if no DB label exists).
+    ingredient_db = get_ingredient_db()
+
+    matches = []
+    for key in keys:  # preserve recommendation order
+        group = by_key.get(key)
+        if not group:
+            continue  # no surviving product for this ingredient -> render nothing
+
+        # Cheapest-first, then name. Unknown tiers sort last via the .get default.
+        group.sort(key=lambda p: (_BUDGET_ORDER.get(p.budget_tier, 99), p.name))
+
+        label = (ingredient_db.get(key) or {}).get("label") or key
+        matches.append({
+            "ingredient_key":   key,
+            "ingredient_label": label,
+            "products":         group,
+        })
+
+    result["product_matches"] = matches
+    return result
 
 
 def _run_full_analysis(post_data):
@@ -66,6 +202,11 @@ def _run_full_analysis(post_data):
     result["masks"] = masks
     result["three_phase_plan"] = three_phase_plan
     result["selected_goals"] = selected_goals
+
+    # Attach curated Product matches. Done here on the SUCCESS path so BOTH
+    # confirm_result (fresh) and my_routine (regenerated) get products with no
+    # extra wiring at either call site.
+    _attach_product_matches(result)
 
     return result
 
