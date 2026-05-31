@@ -230,6 +230,22 @@
 
   .dash-card .btn { margin-top: 4px; }
 
+  /* ── "Your Progress" — Day N display ── */
+  .day-counter { margin-bottom: 18px; }
+  .day-num {
+    font-family: var(--font-display);
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .day-label {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 300;
+    margin-top: 4px;
+  }
+
   /* Disabled "Coming Soon" pill — not actionable, no href (matches home.html). */
   .btn-soon {
     background: var(--white);
@@ -314,20 +330,32 @@
             <a href="{% url 'skin_form' %}" class="btn btn-primary">Update My Skin Analysis</a>
           </div>
 
-          <!-- Routine card — inert, wired in a later brief -->
-          <div class="dash-card dash-card--soon">
-            <span class="chip"><span class="dot"></span> Coming Soon</span>
+          <!-- Routine card — ACTIVE: links to the regenerated full routine -->
+          <div class="dash-card dash-card--active">
             <div class="card-title">Your Routine</div>
-            <p class="card-desc">Your saved morning and night steps, laid out day by day. This view is being wired up next.</p>
-            <button class="btn btn-soon" type="button" disabled aria-disabled="true">Coming Soon</button>
+            <p class="card-desc">Your full morning and night routine, ingredients, and phased plan — rebuilt from your saved analysis.</p>
+            <a href="{% url 'my_routine' %}" class="btn btn-primary">View My Full Routine</a>
           </div>
 
-          <!-- Progress / streak card — inert, wired in a later brief -->
-          <div class="dash-card dash-card--soon">
-            <span class="chip"><span class="dot"></span> Coming Soon</span>
-            <div class="card-title">Progress &amp; Streak</div>
-            <p class="card-desc">Track how consistently you follow your routine and watch your skin improve week over week.</p>
-            <button class="btn btn-soon" type="button" disabled aria-disabled="true">Coming Soon</button>
+          <!-- Progress card — ACTIVE: Day N + Start/Restart -->
+          <div class="dash-card dash-card--active">
+            <div class="card-title">Your Progress</div>
+            {% if has_routine_started %}
+              <div class="day-counter">
+                <div class="day-num">Day {{ routine_day }}</div>
+                <div class="day-label">of your routine</div>
+              </div>
+              <form method="post" action="{% url 'start_routine' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline">Restart</button>
+              </form>
+            {% else %}
+              <p class="card-desc">Start your routine to track your progress day by day.</p>
+              <form method="post" action="{% url 'start_routine' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Start My Routine</button>
+              </form>
+            {% endif %}
           </div>
 
         {% else %}

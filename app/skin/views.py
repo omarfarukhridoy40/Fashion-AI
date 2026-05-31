@@ -1,6 +1,9 @@
 import json
 
-from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.http import QueryDict
+from django.shortcuts import redirect, render
+from django.utils import timezone
 
 from .logic import run_skin_engine
 from .masks import get_mask_recommendations
@@ -119,9 +122,9 @@ def _persist_skin_profile(request, result):
         # Lossless raw input; on re-analysis it is overwritten with the latest
         # submission, which is the correct behaviour.
         "raw_input":         raw_input,
-        # routine_start_date is intentionally NOT set here — it is owned by a
-        # later "start routine" brief. Omitting it leaves new rows null and
-        # preserves any existing value when a returning user re-analyses.
+        # routine_start_date is intentionally NOT set here — it is owned by the
+        # start_routine action. Omitting it leaves new rows null and preserves any
+        # existing value when a returning user re-analyses.
     }
 
     if request.user.is_authenticated:
@@ -202,3 +205,57 @@ def confirm_result(request):
     return render(request, "skin_profile/skin_form.html", {
         "goal_choices": get_goal_choices(),
     })
+
+
+@login_required
+def my_routine(request):
+    """
+    Regenerate the user's saved routine WITHOUT re-running the quiz.
+
+    Rebuilds the original QueryDict from the profile's stored raw_input and
+    reuses _run_full_analysis, so the regenerated result is identical to the
+    original analysis. This is read-only: it does NOT persist (re-writing would
+    be redundant and could clobber routine_start_date semantics).
+    """
+    profile = UserSkinProfile.objects.filter(linked_user=request.user).first()
+
+    # No profile, or an empty/blank raw_input (e.g. a pre-Brief-01.5 row that
+    # never re-analysed) -> nothing to regenerate from. Send them to the quiz.
+    if profile is None or not profile.raw_input:
+        return redirect("skin_form")
+
+    # Rebuild the exact QueryDict the engine originally consumed. setlist
+    # preserves multi-value fields, so .getlist("skin_goals"/"concerns") returns
+    # every value and the regenerated routine matches the original analysis.
+    qd = QueryDict("", mutable=True)
+    for key, values in profile.raw_input.items():
+        qd.setlist(key, values)
+
+    result = _run_full_analysis(qd)
+
+    # A legacy/corrupt raw_input could fail validation — don't 500, re-quiz.
+    if result.get("error"):
+        return redirect("skin_form")
+
+    return render(request, "skin_profile/result.html", result)
+
+
+@login_required
+def start_routine(request):
+    """
+    Stamp routine_start_date = now() on the user's profile.
+
+    Used by both the "Start Routine" and "Restart" buttons on the dashboard.
+    POST-only: it mutates state, so a GET simply falls through to the dashboard
+    redirect without writing anything.
+    """
+    if request.method == "POST":
+        profile = UserSkinProfile.objects.filter(linked_user=request.user).first()
+        if profile is not None:
+            profile.routine_start_date = timezone.now()
+            # Narrow write — only the two columns we touch. "updated_at" must be
+            # listed explicitly: auto_now only fires for fields named in
+            # update_fields on a partial save.
+            profile.save(update_fields=["routine_start_date", "updated_at"])
+
+    return redirect("dashboard")
