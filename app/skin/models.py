@@ -626,6 +626,16 @@ class UserSkinProfile(models.Model):
     skin_type = models.CharField(max_length=50)
     skin_states = models.TextField(blank=True, help_text="Comma-separated detected state names")
     top_concerns = models.TextField(blank=True, help_text="Comma-separated top concern keys")
+
+    # Raw questionnaire submission, stored losslessly as a dict-of-lists
+    # ({field: [values]}). This is the verbatim user input (NOT computed output),
+    # so a later "View full routine" brief can rebuild a QueryDict from it and
+    # re-run the engine to regenerate the full routine on demand.
+    # default=dict (a callable, not a shared mutable) so rows created before this
+    # field migrate cleanly to an empty {} with no data migration; blank=True for
+    # admin/forms. On PostgreSQL this maps to native JSONB.
+    raw_input = models.JSONField(default=dict, blank=True)
+
     conflict_detected = models.BooleanField(default=False)
     primary_concern = models.CharField(max_length=100, blank=True)
 

@@ -81,6 +81,7 @@ def _persist_skin_profile(request, result):
       primary_concern    -> first / highest-priority concern key
       conflict_detected  -> result["conflict_detected"] (the engine has NO
                             "conflicts" key, so we read the real boolean)
+      raw_input          -> verbatim questionnaire submission as a dict-of-lists
     """
     # Defensive guard: never write a failed analysis, even if mis-called.
     if result.get("error"):
@@ -90,6 +91,23 @@ def _persist_skin_profile(request, result):
     top_concerns = result.get("top_concerns", []) or []
     primary_concern = top_concerns[0] if top_concerns else ""
 
+    # Lossless snapshot of the raw questionnaire submission, kept so a later
+    # "View full routine" brief can rebuild a QueryDict from it and re-run the
+    # engine to regenerate the full routine on demand (we store INPUT, not output).
+    #
+    # request.POST.lists() yields (key, [all values]); building a dict-of-lists
+    # this way preserves EVERY value of multi-value fields (concerns, skin_goals).
+    # We must NOT use request.POST.dict() / dict(request.POST) here: those keep
+    # only one value per key and would silently truncate multi-selects — the exact
+    # bug fixed in Brief 01. The result is JSON-serialisable (strings and lists of
+    # strings). csrfmiddlewaretoken (not data) and confirmed (a control flag, not
+    # questionnaire input) are dropped.
+    raw_input = {
+        key: values
+        for key, values in request.POST.lists()
+        if key not in ("csrfmiddlewaretoken", "confirmed")
+    }
+
     defaults = {
         "skin_type":         result.get("skin_type", ""),
         # JSON keeps the full {state, reason, priority} dicts for the dashboard.
@@ -98,6 +116,9 @@ def _persist_skin_profile(request, result):
         "top_concerns":      ",".join(top_concerns),
         "primary_concern":   primary_concern,
         "conflict_detected": bool(result.get("conflict_detected", False)),
+        # Lossless raw input; on re-analysis it is overwritten with the latest
+        # submission, which is the correct behaviour.
+        "raw_input":         raw_input,
         # routine_start_date is intentionally NOT set here — it is owned by a
         # later "start routine" brief. Omitting it leaves new rows null and
         # preserves any existing value when a returning user re-analyses.
