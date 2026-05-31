@@ -125,16 +125,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .reason-list li:last-child{border-bottom:none}
 .reason-list li::before{content:'·';position:absolute;left:2px;color:var(--rose);font-size:18px;line-height:1}
 
-/* Start card */
-.start-card{background:linear-gradient(135deg,var(--ink),#3A2218);border-color:transparent;text-align:center;padding:36px 30px}
-.start-card .card-label{color:rgba(255,255,255,.4)}
-.start-title{font-family:'Playfair Display',serif;font-size:22px;color:#fff;margin-bottom:8px}
-.start-sub{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:24px;line-height:1.6}
-.btn-start{background:linear-gradient(135deg,var(--rose),#9E4F3A);color:#fff;border:none;border-radius:12px;padding:15px 38px;font-family:'Jost',sans-serif;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.3);transition:all .18s ease}
-.btn-start:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(0,0,0,.4)}
-.started-msg{display:none;background:rgba(92,122,94,.2);border:1px solid rgba(92,122,94,.4);border-radius:12px;padding:14px 20px;font-size:14px;color:#A8D5AB;margin-top:16px;line-height:1.5}
-.start-note{font-size:11px;color:rgba(255,255,255,.3);margin-top:12px}
-
 /* Product recommendations */
 .product-group{margin-bottom:18px}
 .product-group:last-child{margin-bottom:0}
@@ -642,58 +632,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div style="font-size:11px;color:#93C5FD;margin-top:10px">PDF export — coming soon</div>
   </div>
 
-  <!-- ═══ START HOOK ═══ -->
-  <div class="card start-card">
-    <div class="card-label">Begin Your Journey</div>
-    <div class="start-title">Start Your Routine Today</div>
-    <div class="start-sub">Tap to lock in your start date. We'll track your progress milestones from today.</div>
-    <button class="btn-start" id="startBtn" onclick="startRoutine()">I'm Starting My Routine ✦</button>
-    <div class="started-msg" id="startedMsg">
-      ✓ Started on <strong id="startDate"></strong><br>
-      Your first milestone check-in: <strong id="milestone"></strong>
-    </div>
-    <div class="start-note">Start date saved locally — Phase 2 will sync this to your account.</div>
-  </div>
-
 </div>
 
-<script>
-const concern   = "{{ top_concerns.0 }}";
-const timelineWks = "{{ timeline.weeks }}";
-
-const milestoneWeeks = {
-  "acne": 4, "pigmentation": 8, "dullness": 2, "dryness": 2,
-  "sensitivity": 4, "dehydration": 1, "oiliness": 4, "dark_circles": 6,
-  "comedones": 4, "aging": 12, "barrier_damage_acne": 6,
-};
-
-function startRoutine(){
-  const now  = new Date();
-  const wks  = milestoneWeeks[concern] || 4;
-  const milestone = new Date(now.getTime() + wks * 7 * 24 * 60 * 60 * 1000);
-
-  localStorage.setItem('routineStartDate', now.toISOString());
-  localStorage.setItem('primaryConcern', concern);
-  localStorage.setItem('milestone', milestone.toISOString());
-
-  showStarted(now, milestone);
-}
-
-function showStarted(start, milestone){
-  const fmt = d => d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
-  document.getElementById('startDate').textContent    = fmt(start);
-  document.getElementById('milestone').textContent    = fmt(milestone);
-  document.getElementById('startedMsg').style.display = 'block';
-  document.getElementById('startBtn').style.display   = 'none';
-}
-
-window.addEventListener('load', () => {
-  const saved = localStorage.getItem('routineStartDate');
-  const savedMilestone = localStorage.getItem('milestone');
-  if(saved){
-    showStarted(new Date(saved), savedMilestone ? new Date(savedMilestone) : new Date());
-  }
-});
-</script>
 </body>
 </html>

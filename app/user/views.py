@@ -10,11 +10,57 @@ from .forms import UserLoginForm, UserRegistrationForm
 from skin.models import UserSkinProfile
 
 
+def _claim_anonymous_skin_profile(request, user):
+    """
+    Attach an anonymous skin profile (analysed while logged out) to a freshly
+    registered account, so the user's pre-signup analysis — including its
+    raw_input — survives and shows on their dashboard.
+
+    Anonymous profiles are written by the skin app with linked_user=None and
+    session_key set to the browsing session's key. We re-key the single matching
+    row to the new user. This is conservative: it only ever re-points ONE
+    genuinely-anonymous row for THIS session, and never touches any other row.
+    """
+    # No persisted session -> there can be no anonymous profile to claim. The
+    # key is None until the session is saved, which happens when the skin flow
+    # stores an anonymous profile; a visitor who never analysed has no key here.
+    session_key = request.session.session_key
+    if not session_key:
+        return
+
+    # Match ONLY a genuinely anonymous profile (linked_user IS NULL) for THIS
+    # exact session. linked_user__isnull guarantees we never steal a row that
+    # already belongs to some other account that happened to reuse a key.
+    # Default ordering is -created_at, so .first() is the newest anonymous row.
+    anon = UserSkinProfile.objects.filter(
+        linked_user__isnull=True, session_key=session_key
+    ).first()
+    if anon is None:
+        return
+
+    # Never clobber: if the new account somehow already has a profile, leave the
+    # anonymous one alone rather than creating a second/conflicting row.
+    if UserSkinProfile.objects.filter(linked_user=user).exists():
+        return
+
+    # Re-key the single row. "updated_at" MUST be in update_fields for its
+    # auto_now to fire on a partial save (same pattern as skin.start_routine).
+    anon.linked_user = user
+    anon.save(update_fields=["linked_user", "updated_at"])
+
+
 def register(request):
     if request.method == "POST":
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
+            # Capture the created user so we can claim any anonymous skin profile
+            # left by this session before signup. form.save() on a ModelForm
+            # returns the instance.
+            user = form.save()
+
+            # Migrate a pre-signup anonymous analysis onto the new account.
+            _claim_anonymous_skin_profile(request, user)
+
             messages.success(
                 request, "Account created successfully! Please log in."
             )
